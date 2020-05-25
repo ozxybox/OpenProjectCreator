@@ -1,5 +1,4 @@
 #pragma once
-#include <stdarg.h>
 
 // super lazy. change this?
 #define ARGUMENT_MAX_COUNT 3
