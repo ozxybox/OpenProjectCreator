@@ -1,5 +1,7 @@
 #pragma once
 
+#define END_LINE '\n'
+
 inline bool IsWhitespace(char c)
 {
 	return c <= ' ' || c == 127;

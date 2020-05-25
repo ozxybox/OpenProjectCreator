@@ -9,7 +9,7 @@ public:
 
 private:
 	virtual instruction_t GetInstruction(const char* str, size_t length);
-	virtual void SkipWhitespace(const char* str, int& i);
+	virtual void SkipWhitespace(const char* str, int& i, size_t length);
 
 };
 

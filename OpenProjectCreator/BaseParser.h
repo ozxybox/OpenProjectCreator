@@ -55,7 +55,9 @@ protected:
 	virtual instruction_t GetInstruction(const char* str, size_t length) = 0;
 	
 	// this is virtual to allow changing of comment stuff
-	virtual void SkipWhitespace(const char* str, int& i) = 0;
+	virtual void SkipWhitespace(const char* str, int& i, size_t length) = 0;
+
+	void ThrowException() {}
 
 };
 
