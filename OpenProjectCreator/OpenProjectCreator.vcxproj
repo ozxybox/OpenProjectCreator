@@ -147,7 +147,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="OpenProjectCreator.cpp" />
+    <ClCompile Include="BaseParser.cpp" />
+    <ClCompile Include="ConditionEvaluator.cpp" />
+    <ClCompile Include="MacroStore.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="ParserHelpers.cpp" />
+    <ClCompile Include="VPCParser.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BaseParser.h" />
+    <ClInclude Include="ConditionEvaluator.h" />
+    <ClInclude Include="MacroStore.h" />
+    <ClInclude Include="ParserHelpers.h" />
+    <ClInclude Include="VPCParser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
