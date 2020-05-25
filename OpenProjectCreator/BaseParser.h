@@ -49,8 +49,8 @@ class BaseParser
 {
 
 	void Parse(const char* str, size_t length);
-private:
 
+protected:
 	
 	virtual instruction_t GetInstruction(const char* str, size_t length) = 0;
 	
