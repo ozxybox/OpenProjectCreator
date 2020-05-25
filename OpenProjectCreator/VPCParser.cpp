@@ -3,16 +3,6 @@
 
 #define INSTRUCTION_PREFIX '$'
 
-/*
-struct instruction_t
-{
-	const char* name;
-	int argumentCount;
-	InstructionTypes* argumentTypes;
-	bool isPreprocessor;
-};
-*/
-
 
 //this is so sad
 
