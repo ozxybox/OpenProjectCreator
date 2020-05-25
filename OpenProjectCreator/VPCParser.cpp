@@ -28,7 +28,7 @@ void VPC_Configuration(instructionData_t data)
 // hash table would be quicker
 instruction_t g_vpcInstructions[] =
 {
-	//Name, function, is preprocessor, argument count(MAX OF 4), argument types
+	//Name, function, is preprocessor, argument types(MAX OF 4)
 	DEFINE_INSTRUCTION("Macro", VPC_Macro, true, ArgumentType::QUOTELESS_STRING, ArgumentType::QUOTED_STRING)
 	DEFINE_INSTRUCTION("Configuration", VPC_Configuration, false, ArgumentType::QUOTED_STRING, ArgumentType::SUBBLOCK)
 };
