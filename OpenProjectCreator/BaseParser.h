@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ParserHelpers.h"
+
 // super lazy. change this?
 #define ARGUMENT_MAX_COUNT 3
 
@@ -12,7 +14,7 @@ enum class ArgumentType
 	//contains just a single element
 	ARRAY,
 	//can contain instructions
-	SUBBLOCK
+	SUB_BLOCK
 };
 
 
@@ -53,7 +55,8 @@ class BaseParser
 protected:
 	
 	virtual instruction_t GetInstruction(const char* str, size_t length) = 0;
-	
+	inline instruction_t GetInstruction(insetString_t str) { return GetInstruction(str.string, str.length); }
+
 	// this is virtual to allow changing of comment stuff
 	virtual void SkipWhitespace(const char* str, int& i, size_t length) = 0;
 

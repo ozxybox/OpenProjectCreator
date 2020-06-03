@@ -148,17 +148,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BaseParser.cpp" />
+    <ClCompile Include="BaseProject.cpp" />
     <ClCompile Include="ConditionEvaluator.cpp" />
+    <ClCompile Include="ExtendedVPCParser.cpp" />
     <ClCompile Include="MacroStore.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ParserHelpers.cpp" />
+    <ClCompile Include="VisualStudioProject.cpp" />
     <ClCompile Include="VPCParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseParser.h" />
+    <ClInclude Include="BaseProject.h" />
     <ClInclude Include="ConditionEvaluator.h" />
+    <ClInclude Include="ExtendedVPCParser.h" />
     <ClInclude Include="MacroStore.h" />
     <ClInclude Include="ParserHelpers.h" />
+    <ClInclude Include="VisualStudioProject.h" />
     <ClInclude Include="VPCParser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

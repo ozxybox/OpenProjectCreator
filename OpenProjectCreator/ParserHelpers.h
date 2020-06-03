@@ -2,14 +2,15 @@
 
 #define END_LINE '\n'
 
+struct insetString_t
+{
+	const char* string;
+	size_t length;
+};
+
 inline bool IsWhitespace(char c)
 {
 	return c <= ' ' || c == 127;
-}
-
-inline bool IsNumber(char c)
-{
-	return c >= '0' && c <= '9';
 }
 
 inline bool IsNumber(char c)
