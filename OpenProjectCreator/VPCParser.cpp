@@ -9,13 +9,31 @@
 
 
 
-insetString_t ReadQuotelessString(const char* str, size_t& i, size_t length)
+insetString_t ReadQuotelessString(const char* str, size_t& i, size_t length, ErrorCode* error = 0)
 {
 	insetString_t inset;
+
+	//first char must not be a symbol that's used by other types or whitespace
+	char c = str[i];
+	if (c == BLOCK_START || c == BLOCK_END || c == STRING_QUOTE || IsWhitespace(c))
+	{
+		inset.length = 0;
+		inset.string = 0;
+
+		if (error)
+			*error = ErrorCode::INVALID_QUOTELESS_STRING;
+
+		return inset;
+	}
+
+
+
 	inset.string = str + i;
 	int start = i;
 
-	for (char c = str[i]; i < length; i++, c = str[i])
+	i++;
+
+	for (c = str[i]; i < length; i++, c = str[i])
 	{
 		
 		if (IsWhitespace(c) || c == BLOCK_START || c == BLOCK_END || c == STRING_QUOTE)
@@ -38,7 +56,7 @@ insetString_t ReadQuotedString(const char* str, size_t& i, size_t length, ErrorC
 		inset.string = 0;
 
 		if (error)
-			*error = ErrorCode::UNEXPECTED_END_OF_FILE;
+			*error = ErrorCode::STRING_NOT_BEGUN_WITH_QUOTE;
 
 		return inset;
 	}
@@ -66,7 +84,7 @@ insetString_t ReadString(const char* str, size_t& i, size_t length, ErrorCode* e
 {
 	if (str[i] == STRING_QUOTE)
 		return ReadQuotedString(str, i, length, error);
-	return ReadQuotelessString(str, i, length);
+	return ReadQuotelessString(str, i, length, error);
 }
 
 int ReadNumber(const char* str, size_t& i, size_t length, ErrorCode* error = 0)
@@ -172,7 +190,13 @@ VPCParser::VPCParser(const char* str, size_t length)
 		if (str[i] == INSTRUCTION_PREFIX)
 		{
 			i++;
-			insetString_t instructionStr = ReadQuotelessString(str, i, length);
+			insetString_t instructionStr = ReadQuotelessString(str, i, length, &error);
+			if (error != ErrorCode::NO_ERROR)
+			{
+				ThrowException(error);
+				return;
+			}
+
 			instruction_t* instruction = GetInstruction(instructionStr);
 			if (!instruction)
 			{
@@ -188,6 +212,12 @@ VPCParser::VPCParser(const char* str, size_t length)
 				for (int argument = 0; argument < instruction->argumentCount; argument++)
 				{
 					SkipWhitespace(str, i, length);
+
+					if (i >= length)
+					{
+						ThrowException(ErrorCode::UNEXPECTED_END_OF_FILE);
+					}
+
 
 					switch (instruction->argumentTypes[argument])
 					{
@@ -208,7 +238,7 @@ VPCParser::VPCParser(const char* str, size_t length)
 						break;
 					case ArgumentType::QUOTELESS_STRING:
 						stringValue_t* sv = new stringValue_t;
-						sv->string = ReadQuotelessString(str, i, length);
+						sv->string = ReadQuotelessString(str, i, length, &error);
 
 						instructionData->arguments[argument] = sv;
 						break;
@@ -228,8 +258,10 @@ VPCParser::VPCParser(const char* str, size_t length)
 					}
 
 					if (error != ErrorCode::NO_ERROR)
+					{
 						ThrowException(error);
-
+						return;
+					}
 
 				}
 
