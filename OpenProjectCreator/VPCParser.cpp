@@ -38,7 +38,7 @@ const instruction_t g_vpcInstructions[] =
 	DEFINE_INSTRUCTION("Macro", VPC_Macro, true, ArgumentType::QUOTELESS_STRING, ArgumentType::QUOTED_STRING)
 	DEFINE_INSTRUCTION("Configuration", VPC_Configuration, false, ArgumentType::QUOTED_STRING, ArgumentType::SUB_BLOCK)
 
-	BEGIN_CUSTOM_INSTRUCTION("Folder", VPC_Folder, false, ArgumentType::STRING, ArgumentType::SUB_BLOCK)
+	BEGIN_CUSTOM_INSTRUCTION("Folder", VPC_Folder, false, 1, ArgumentType::STRING, ArgumentType::SUB_BLOCK)
 		DEFINE_INSTRUCTION("Add", VPC_Folder_Add, false, ArgumentType::STRING)
 	END_CUSTOM_INSTRUCTION()
 };
@@ -179,7 +179,7 @@ void VPCParser::SkipWhitespace(const char* str, size_t& i, size_t length)
 	}
 }
 
-bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorCode* error = 0)
+bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorCode* error)
 {
 	if (error != nullptr)
 	{

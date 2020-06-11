@@ -9,7 +9,7 @@ struct insetString_t
 	size_t length;
 };
 
-typedef enum ErrorCode;
+enum class ErrorCode;
 
 insetString_t ReadQuotelessString(const char* str, size_t& i, size_t length, ErrorCode* error = 0);
 insetString_t ReadQuotedString(const char* str, size_t& i, size_t length, ErrorCode* error = 0);

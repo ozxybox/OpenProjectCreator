@@ -5,6 +5,23 @@
 // super lazy. change this?
 #define ARGUMENT_MAX_COUNT 3
 
+// am I a criminal for doing this?
+
+//WHY WONT THEY JUST LET ME GET THE ARG COUNT FOR THE MACRO???
+template <typename... A>
+constexpr int NumberOfArgs(A ...)
+{
+	return sizeof...(A);
+}
+
+#define DEFINE_INSTRUCTION(name, function, isPreprocessor, ...) {name, sizeof(name), {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, function},
+
+// has its own custom set of sub instructions
+// count is a smelly quick fix. FIX SOON!
+#define BEGIN_CUSTOM_INSTRUCTION(name, function, isPreprocessor, count, ...) {name, sizeof(name), {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, function, new instruction_t[count] {
+#define END_CUSTOM_INSTRUCTION() }},
+
+
 enum class ErrorCode {
 	NO_ERROR = 0,
 	UNEXPECTED_END_OF_FILE,
@@ -19,7 +36,6 @@ enum class ErrorCode {
 	SECONDARY_CONDITION,
 	INCOMPLETE_QUOTED_STRING,
 };
-
 
 
 enum class ArgumentType
@@ -42,6 +58,37 @@ enum class ValueType
 	ARRAY,
 	//can contain instructions
 	SUB_BLOCK
+};
+
+
+struct instructionData_t;
+typedef void (*InstructionFunction)(instructionData_t);
+
+struct instruction_t
+{
+	const char* name;
+	int nameLength;
+	ArgumentType argumentTypes[ARGUMENT_MAX_COUNT];
+	int argumentCount;
+	bool isPreprocessor;
+	InstructionFunction function;
+	instruction_t* subInstructions = 0;
+};
+
+struct value_t;
+struct instructionData_t
+{
+	~instructionData_t() { 
+		if (arguments) 
+		{ 
+			for (int i = 0; i < instruction->argumentCount; i++)
+				delete arguments[i];
+			
+			delete[] arguments; 
+		}
+	}
+	instruction_t* instruction;
+	value_t** arguments = 0;
 };
 
 
@@ -79,48 +126,6 @@ struct subBlockValue_t : public value_t
 	size_t length = 0;
 };
 
-struct instructionData_t
-{
-	~instructionData_t() { 
-		if (arguments) 
-		{ 
-			for (int i = 0; i < instruction->argumentCount; i++)
-				delete arguments[i];
-			
-			delete[] arguments; 
-		}
-	}
-	instruction_t* instruction;
-	value_t** arguments = 0;
-};
-
-typedef void (*InstructionFunction)(instructionData_t);
-
-// am I a criminal for doing this?
-
-//WHY WONT THEY JUST LET ME GET THE ARG COUNT FOR THE MACRO???
-template <typename... A>
-constexpr int NumberOfArgs(A ...)
-{
-	return sizeof...(A);
-}
-
-#define DEFINE_INSTRUCTION(name, function, isPreprocessor, ...) {name, sizeof(name), {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, function},
-
-// has its own custom set of sub instructions
-#define BEGIN_CUSTOM_INSTRUCTION(name, function, isPreprocessor, ...) {name, sizeof(name), {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, function, new instruction_t[] {
-#define END_CUSTOM_INSTRUCTION() }},
-
-struct instruction_t
-{
-	const char* name;
-	int nameLength;
-	ArgumentType argumentTypes[ARGUMENT_MAX_COUNT];
-	int argumentCount;
-	bool isPreprocessor;
-	InstructionFunction function;
-	instruction_t* subInstructions = 0;
-};
 
 class BaseParser
 {
