@@ -135,7 +135,7 @@ void VPCParser::SkipWhitespace(const char* str, size_t& i, size_t length)
 				{
 					if (str[i] == '*' && str[i + 1] == '/')
 					{
-						break;
+						return;
 					}
 				}
 
