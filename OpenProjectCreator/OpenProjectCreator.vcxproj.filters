@@ -33,9 +33,6 @@
     <ClCompile Include="ParserHelpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QPCParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ExtendedVPCParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -60,9 +57,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ParserHelpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="QPCParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ExtendedVPCParser.h">
