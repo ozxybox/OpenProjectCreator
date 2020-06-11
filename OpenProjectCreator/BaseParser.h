@@ -14,11 +14,11 @@ constexpr int NumberOfArgs(A ...)
 	return sizeof...(A);
 }
 
-#define DEFINE_INSTRUCTION(name, function, isPreprocessor, ...) {name, sizeof(name), {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, function},
+#define DEFINE_INSTRUCTION(name, function, isPreprocessor, ...) {name, sizeof(name), {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, &function},
 
 // has its own custom set of sub instructions
 // count is a smelly quick fix. FIX SOON!
-#define BEGIN_CUSTOM_INSTRUCTION(name, function, isPreprocessor, count, ...) {name, sizeof(name), {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, function, new instruction_t[count] {
+#define BEGIN_CUSTOM_INSTRUCTION(name, function, isPreprocessor, count, ...) {name, sizeof(name), {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, &function, new instruction_t[count] {
 #define END_CUSTOM_INSTRUCTION() }},
 
 
@@ -62,7 +62,7 @@ enum class ValueType
 
 
 struct instructionData_t;
-typedef void (*InstructionFunction)(instructionData_t);
+typedef void (*InstructionFunction)(instructionData_t*);
 
 struct instruction_t
 {

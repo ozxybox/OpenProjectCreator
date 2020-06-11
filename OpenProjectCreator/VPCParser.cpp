@@ -10,22 +10,22 @@
 
 //this is so sad
 
-void VPC_Macro(instructionData_t data)
+void VPC_Macro(instructionData_t* data)
 {
 	
 }
 
-void VPC_Configuration(instructionData_t data)
+void VPC_Configuration(instructionData_t* data)
 {
 
 }
 
-void VPC_Folder(instructionData_t data)
+void VPC_Folder(instructionData_t* data)
 {
 
 }
 
-void VPC_Folder_Add(instructionData_t data)
+void VPC_Folder_Add(instructionData_t* data)
 {
 
 }
@@ -47,6 +47,7 @@ const instruction_t g_vpcInstructions[] =
 
 VPCParser::VPCParser(const char* str, size_t length)
 {
+
 	ErrorCode error = ErrorCode::NO_ERROR;
 	for (size_t i = 0; i < length; i++)
 	{
@@ -128,6 +129,16 @@ VPCParser::VPCParser(const char* str, size_t length)
 				}
 			}
 
+			if (instruction->isPreprocessor)
+			{
+				// run now and dump the instruction
+				instruction->function(instructionData);
+				delete instructionData;
+			}
+			else
+			{
+				m_instructionList.push_back(instructionData);
+			}
 
 
 		}
@@ -138,6 +149,12 @@ VPCParser::VPCParser(const char* str, size_t length)
 		}
 
 	}
+
+
+	for (instructionData_t* data : m_instructionList)
+		data->instruction->function(data);
+
+
 }
 
 void VPCParser::SkipWhitespace(const char* str, size_t& i, size_t length)
