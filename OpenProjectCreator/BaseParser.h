@@ -15,6 +15,7 @@ enum class ErrorCode {
 	COMPILED_WITH_TYPELESS_ARGUMENT,
 	STRING_NOT_BEGUN_WITH_QUOTE,
 	INVALID_QUOTELESS_STRING,
+	UNIMPLEMENTED,
 };
 
 
@@ -133,6 +134,8 @@ protected:
 	virtual void SkipWhitespace(const char* str, int& i, size_t length) = 0;
 
 	void ThrowException(ErrorCode error) {}
+
+	virtual value_t* ParseArgument(ArgumentType type, const char* str, size_t& i, size_t length, ErrorCode* error = 0);
 
 };
 

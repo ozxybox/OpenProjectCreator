@@ -3,143 +3,7 @@
 #include <stdlib.h>
 
 #define INSTRUCTION_PREFIX '$'
-#define BLOCK_START        '{'
-#define BLOCK_END          '}'
-#define STRING_QUOTE       '"'
 
-
-
-insetString_t ReadQuotelessString(const char* str, size_t& i, size_t length, ErrorCode* error = 0)
-{
-	insetString_t inset;
-
-	//first char must not be a symbol that's used by other types or whitespace
-	char c = str[i];
-	if (c == BLOCK_START || c == BLOCK_END || c == STRING_QUOTE || IsWhitespace(c))
-	{
-		inset.length = 0;
-		inset.string = 0;
-
-		if (error)
-			*error = ErrorCode::INVALID_QUOTELESS_STRING;
-
-		return inset;
-	}
-
-
-
-	inset.string = str + i;
-	int start = i;
-
-	i++;
-
-	for (c = str[i]; i < length; i++, c = str[i])
-	{
-		
-		if (IsWhitespace(c) || c == BLOCK_START || c == BLOCK_END || c == STRING_QUOTE)
-			break;
-	}
-	
-	inset.length = i - start;
-
-	return inset;
-}
-
-insetString_t ReadQuotedString(const char* str, size_t& i, size_t length, ErrorCode* error = 0)
-{
-	insetString_t inset;
-
-	//first character should be a quote
-	if (str[i] != STRING_QUOTE)
-	{
-		inset.length = 0;
-		inset.string = 0;
-
-		if (error)
-			*error = ErrorCode::STRING_NOT_BEGUN_WITH_QUOTE;
-
-		return inset;
-	}
-	i++;
-
-	int start = i;
-
-	for (; i < length && str[i] != STRING_QUOTE; i++);
-	
-	// if we've hit the end of the string and havent gotten our quote, return null
-	if (i >= length)
-	{
-		inset.length = 0;
-		inset.string = 0;
-		return inset;
-	}
-
-	inset.string = str + i;
-	inset.length = i - start;
-	
-	return inset;
-}
-
-insetString_t ReadString(const char* str, size_t& i, size_t length, ErrorCode* error = 0)
-{
-	if (str[i] == STRING_QUOTE)
-		return ReadQuotedString(str, i, length, error);
-	return ReadQuotelessString(str, i, length, error);
-}
-
-int ReadNumber(const char* str, size_t& i, size_t length, ErrorCode* error = 0)
-{
-	bool isNegative = false;
-
-	//overengineered? maybe... C++ lets you do +-+-1, so I felt this was appropriate
-	if(str[i] == '+' || str[i] == '-')
-		for (; i < length; i++)
-		{
-			switch (str[i])
-			{
-			case '+':
-				isNegative = false;
-				continue;
-			case '-':
-				isNegative = !isNegative;
-				continue;
-			}
-			break;
-		}
-
-	//end of string with no numbers
-	if (i >= length)
-	{
-		if (error)
-			*error = ErrorCode::NUMBER_WITH_NO_NUMBERS;
-
-		return 0;
-	}
-
-	//end of sign with no numbers
-	if (!IsNumber(str[i]))
-	{
-		if (error)
-			*error = ErrorCode::NUMBER_WITH_NO_NUMBERS;
-
-		return 0;
-	}
-
-	//little shortcut
-	//since we know for a fact that str[i] is currently a number, we can skip double checking if it's actually a number
-	int number = str[i] - '0';
-	i++;
-
-	for (; i < length && IsNumber(str[i]); i++)
-	{
-		//move the decimal right one
-		number *= 10;
-
-		number += str[i] - '0';
-	}
-	
-	return number * (isNegative ? -1 : 1);
-}
 
 
 
@@ -187,9 +51,11 @@ VPCParser::VPCParser(const char* str, size_t length)
 	{
 		SkipWhitespace(str, i, length);
 
+		// all VPC instructions must begin with a prefix
 		if (str[i] == INSTRUCTION_PREFIX)
 		{
 			i++;
+
 			insetString_t instructionStr = ReadQuotelessString(str, i, length, &error);
 			if (error != ErrorCode::NO_ERROR)
 			{
@@ -200,12 +66,14 @@ VPCParser::VPCParser(const char* str, size_t length)
 			instruction_t* instruction = GetInstruction(instructionStr);
 			if (!instruction)
 			{
-				// we failed to find the instruction. syntax error
+				// we failed to find the instruction.
 				ThrowException(ErrorCode::UNRECOGNIZED_INSTRUCTION);
 				return;
 			}
 
+
 			instructionData_t* instructionData = new instructionData_t;
+			// if this instruction contains arguments, we have to allocate space for them and parse them
 			if(instruction->argumentCount > 0)
 			{ 
 				instructionData->arguments = new value_t*[instruction->argumentCount];
@@ -218,55 +86,18 @@ VPCParser::VPCParser(const char* str, size_t length)
 						ThrowException(ErrorCode::UNEXPECTED_END_OF_FILE);
 					}
 
+					instructionData->arguments[argument] = ParseArgument(instruction->argumentTypes[argument], str, i, length, &error);
 
-					switch (instruction->argumentTypes[argument])
-					{
-					case ArgumentType::ARRAY:
-
-						break;
-					case ArgumentType::NUMBER:
-						numberValue_t* nv = new numberValue_t;
-						nv->number = ReadNumber(str, i, length, &error);
-
-						instructionData->arguments[argument] = nv;
-						break;
-					case ArgumentType::QUOTED_STRING:
-						stringValue_t* sv = new stringValue_t;
-						sv->string = ReadQuotedString(str, i, length, &error);
-
-						instructionData->arguments[argument] = sv;
-						break;
-					case ArgumentType::QUOTELESS_STRING:
-						stringValue_t* sv = new stringValue_t;
-						sv->string = ReadQuotelessString(str, i, length, &error);
-
-						instructionData->arguments[argument] = sv;
-						break;
-					case ArgumentType::STRING:
-						stringValue_t* sv = new stringValue_t;
-						sv->string = ReadString(str, i, length, &error);
-
-						instructionData->arguments[argument] = sv;
-						break;
-					case ArgumentType::SUB_BLOCK:
-
-						break;
-					default:
-						// we should never hit an argument without a type
-						ThrowException(ErrorCode::COMPILED_WITH_TYPELESS_ARGUMENT);
-						return;
-					}
-
+					//failed to parse the argument
 					if (error != ErrorCode::NO_ERROR)
 					{
 						ThrowException(error);
 						return;
 					}
-
 				}
-
-
 			}
+
+
 		}
 		else
 		{
