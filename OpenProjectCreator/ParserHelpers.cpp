@@ -6,6 +6,13 @@
 #define BLOCK_END          '}'
 #define STRING_QUOTE       '"'
 
+
+////////////////
+// READ VALUE //
+////////////////
+
+
+
 insetString_t ReadQuotelessString(const char* str, size_t& i, size_t length, ErrorCode* error = 0)
 {
 	insetString_t inset;
@@ -68,6 +75,9 @@ insetString_t ReadQuotedString(const char* str, size_t& i, size_t length, ErrorC
 	{
 		inset.length = 0;
 		inset.string = 0;
+		if (error)
+			*error = ErrorCode::INCOMPLETE_QUOTED_STRING;
+
 		return inset;
 	}
 
@@ -136,4 +146,106 @@ int ReadNumber(const char* str, size_t& i, size_t length, ErrorCode* error = 0)
 	}
 
 	return number * (isNegative ? -1 : 1);
+}
+
+
+
+/////////////////////////////////////////////////////////////////////
+//                      SEEK END OF VALUE                          //
+// these are dumbed down versions of the readers for quick seeking //
+/////////////////////////////////////////////////////////////////////
+
+
+
+void SeekEndOfQuotelessString(const char* str, size_t& i, size_t length, ErrorCode* error = 0)
+{
+	//first char must not be a symbol that's used by other types or whitespace
+	char c = str[i];
+	if (c == BLOCK_START || c == BLOCK_END || c == STRING_QUOTE || IsWhitespace(c))
+	{
+		
+		if (error)
+			*error = ErrorCode::INVALID_QUOTELESS_STRING;
+
+		return;
+	}
+
+	i++;
+
+	for (c = str[i]; i < length; i++, c = str[i])
+	{
+
+		if (IsWhitespace(c) || c == BLOCK_START || c == BLOCK_END || c == STRING_QUOTE)
+			break;
+	}
+
+	return;
+}
+
+void SeekEndOfQuotedString(const char* str, size_t& i, size_t length, ErrorCode* error = 0)
+{
+	
+	//first character should be a quote
+	if (str[i] != STRING_QUOTE)
+	{
+		if (error)
+			*error = ErrorCode::STRING_NOT_BEGUN_WITH_QUOTE;
+
+		return;
+	}
+	i++;
+
+	int start = i;
+
+	for (; i < length && str[i] != STRING_QUOTE; i++);
+
+	// if we've hit the end of the string and havent gotten our quote, return null
+	if (i >= length)
+	{
+		if (error)
+			*error = ErrorCode::INCOMPLETE_QUOTED_STRING;
+		return;
+	}
+}
+
+void SeekEndOfString(const char* str, size_t& i, size_t length, ErrorCode* error = 0)
+{
+	if (str[i] == STRING_QUOTE)
+		SeekEndOfQuotedString(str, i, length, error);
+	else
+		SeekEndOfQuotelessString(str, i, length, error);
+}
+
+void SeekEndOfNumber(const char* str, size_t& i, size_t length, ErrorCode* error = 0)
+{
+	//overengineered? maybe... C++ lets you do +-+-1, so I felt this was appropriate
+	if (str[i] == '+' || str[i] == '-')
+	{
+		i++;
+		for (; i < length && (str[i] == '+' || str[i] == '-'); i++);
+	}
+
+	//end of string with no numbers
+	if (i >= length)
+	{
+		if (error)
+			*error = ErrorCode::NUMBER_WITH_NO_NUMBERS;
+
+		return;
+	}
+
+	//end of sign with no numbers
+	if (!IsNumber(str[i]))
+	{
+		if (error)
+			*error = ErrorCode::NUMBER_WITH_NO_NUMBERS;
+
+		return;
+	}
+
+	//little shortcut
+	//since we know for a fact that str[i] is currently a number, we can skip double checking if it's actually a number
+	i++;
+
+	for (; i < length && IsNumber(str[i]); i++);
 }

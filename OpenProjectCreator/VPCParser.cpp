@@ -3,7 +3,8 @@
 #include <stdlib.h>
 
 #define INSTRUCTION_PREFIX '$'
-
+#define CONDITION_BEGIN '['
+#define CONDITION_END ']'
 
 
 
@@ -77,6 +78,9 @@ VPCParser::VPCParser(const char* str, size_t length)
 			if(instruction->argumentCount > 0)
 			{ 
 				instructionData->arguments = new value_t*[instruction->argumentCount];
+				
+				bool hasParsedCondition = false;
+				bool conditionReturn = true;
 				for (int argument = 0; argument < instruction->argumentCount; argument++)
 				{
 					SkipWhitespace(str, i, length);
@@ -86,9 +90,36 @@ VPCParser::VPCParser(const char* str, size_t length)
 						ThrowException(ErrorCode::UNEXPECTED_END_OF_FILE);
 					}
 
-					instructionData->arguments[argument] = ParseArgument(instruction->argumentTypes[argument], str, i, length, &error);
 
-					//failed to parse the argument
+					// I'm not a huge fan of this
+					// this allows for placing the condition into the instruction's arguments at any point rather than just at the end of a line
+					if (str[i] == CONDITION_BEGIN)
+					{
+						if (hasParsedCondition)
+						{
+							ThrowException(ErrorCode::SECONDARY_CONDITION);
+							return;
+						}
+
+						conditionReturn = ParseCondition(str, i, length, &error);
+						
+						// failed to parse the condition
+						if (error != ErrorCode::NO_ERROR)
+						{
+							ThrowException(error);
+							return;
+						}
+
+						hasParsedCondition = true;
+					}
+
+					// if the condition returned false, seek our way out of this instruction
+					if(conditionReturn)
+						instructionData->arguments[argument] = ParseArgument(instruction->argumentTypes[argument], str, i, length, &error);
+					else
+						SeekEndOfArgument(instruction->argumentTypes[argument], str, i, length, &error);
+
+					// failed to parse the argument
 					if (error != ErrorCode::NO_ERROR)
 					{
 						ThrowException(error);
@@ -96,6 +127,7 @@ VPCParser::VPCParser(const char* str, size_t length)
 					}
 				}
 			}
+
 
 
 		}
@@ -145,4 +177,13 @@ void VPCParser::SkipWhitespace(const char* str, size_t& i, size_t length)
 			}
 		}
 	}
+}
+
+bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorCode* error = 0)
+{
+	if (error != nullptr)
+	{
+		*error = ErrorCode::NOT_IMPLEMENTED;
+	}
+	return false;
 }

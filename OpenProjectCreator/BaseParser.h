@@ -15,7 +15,9 @@ enum class ErrorCode {
 	COMPILED_WITH_TYPELESS_ARGUMENT,
 	STRING_NOT_BEGUN_WITH_QUOTE,
 	INVALID_QUOTELESS_STRING,
-	UNIMPLEMENTED,
+	NOT_IMPLEMENTED,
+	SECONDARY_CONDITION,
+	INCOMPLETE_QUOTED_STRING,
 };
 
 
@@ -136,6 +138,7 @@ protected:
 	void ThrowException(ErrorCode error) {}
 
 	virtual value_t* ParseArgument(ArgumentType type, const char* str, size_t& i, size_t length, ErrorCode* error = 0);
+	virtual void SeekEndOfArgument(ArgumentType type, const char* str, size_t& i, size_t length, ErrorCode* error = 0);
 
 };
 
