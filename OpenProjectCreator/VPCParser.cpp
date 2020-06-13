@@ -47,6 +47,12 @@ const instruction_t g_vpcInstructions[] =
 
 
 
+void VPCParser::Execute()
+{
+	for (instructionData_t* data : m_instructionDataList)
+		data->instruction->function(data);
+}
+
 instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_t length, ErrorCode& error)
 {
 

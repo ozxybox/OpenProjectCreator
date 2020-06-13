@@ -130,12 +130,13 @@ struct subblockValue_t : public value_t
 class BaseParser
 {
 public:
-	BaseParser(const char* str, size_t length) { Parse(str, length); };
+	BaseParser(const char* str, size_t length) { Parse(str, length); Execute(); };
 protected:
 
 	BaseParser() {}
 
 	virtual void Parse(const char* str, size_t length);
+	virtual void Execute() = 0;
 
 	virtual instructionData_t* ParseInstruction(const char* str, size_t& i, size_t length, ErrorCode& error) = 0;
 
