@@ -3,6 +3,33 @@
 
 void BaseParser::Parse(const char* str, size_t length)
 {
+	ErrorCode error = ErrorCode::NO_ERROR;
+	for (size_t i = 0; i < length; i++)
+	{
+		SkipWhitespace(str, i, length);
+
+		instructionData_t* instructionData = ParseInstruction(str, i, length, error);
+
+
+		if (error != ErrorCode::NO_ERROR)
+		{
+			ThrowException(error);
+			return;
+		}
+
+		// if it's a preprocessor instruction, we need to run it now
+		if (instructionData->instruction->isPreprocessor)
+		{
+			// run now and dump the instruction
+			instructionData->instruction->function(instructionData);
+			delete instructionData;
+		}
+		else
+		{
+			m_instructionDataList.push_back(instructionData);
+		}
+
+	}
 
 }
 
@@ -45,7 +72,7 @@ value_t* BaseParser::ParseArgument(ArgumentType type, const char* str, size_t& i
 			return sv;
 		}
 
-		case ArgumentType::SUB_BLOCK:
+		case ArgumentType::SUBBLOCK:
 		{
 			break;
 		}
@@ -87,7 +114,8 @@ void BaseParser::SeekEndOfArgument(ArgumentType type, const char* str, size_t & 
 		SeekEndOfString(str, i, length, error);
 		return;
 
-	case ArgumentType::SUB_BLOCK:
+	case ArgumentType::SUBBLOCK:
+		SeekEndOfSubblock(str, i, length, *error);
 		break;
 
 	default:
@@ -96,6 +124,6 @@ void BaseParser::SeekEndOfArgument(ArgumentType type, const char* str, size_t & 
 		return;
 	}
 
-	// if we reach this, the something's totally broken, or the type is unimplemented
+	// if we reach this, then something's totally broken, or the type is unimplemented
 	*error = ErrorCode::NOT_IMPLEMENTED;
 }

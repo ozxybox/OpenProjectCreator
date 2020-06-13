@@ -35,6 +35,7 @@ enum class ErrorCode {
 	NOT_IMPLEMENTED,
 	SECONDARY_CONDITION,
 	INCOMPLETE_QUOTED_STRING,
+	SUBBLOCK_MUST_BEGIN_WITH_BRACE
 };
 
 
@@ -47,7 +48,7 @@ enum class ArgumentType
 	//contains just a single element
 	ARRAY,
 	//can contain instructions
-	SUB_BLOCK
+	SUBBLOCK
 };
 
 enum class ValueType
@@ -57,7 +58,7 @@ enum class ValueType
 	//contains just a single element
 	ARRAY,
 	//can contain instructions
-	SUB_BLOCK
+	SUBBLOCK
 };
 
 
@@ -118,27 +119,33 @@ struct arrayValue_t : public value_t
 	size_t length = 0;
 };
 
-struct subBlockValue_t : public value_t
+struct subblockValue_t : public value_t
 {
-	~subBlockValue_t() { if(subBlock) delete[] subBlock; }
-	ValueType type = ValueType::SUB_BLOCK;
-	instructionData_t* subBlock = 0;
-	size_t length = 0;
+	~subblockValue_t() { if(subblock) delete subblock; }
+	ValueType type = ValueType::SUBBLOCK;
+	BaseParser* subblock = 0;
 };
 
 
 class BaseParser
 {
-
-	void Parse(const char* str, size_t length);
-
+public:
+	BaseParser(const char* str, size_t length) { Parse(str, length); };
 protected:
-	
-	virtual instruction_t* GetInstruction(const char* str, size_t length) = 0;
-	inline instruction_t* GetInstruction(insetString_t str) { return GetInstruction(str.string, str.length); }
+
+	BaseParser() {}
+
+	virtual void Parse(const char* str, size_t length);
+
+	virtual instructionData_t* ParseInstruction(const char* str, size_t& i, size_t length, ErrorCode& error) = 0;
+
+	virtual void ReadSubblock(const char* str, size_t& i, size_t length, ErrorCode& error) = 0;
+	virtual void SeekEndOfSubblock(const char* str, size_t& i, size_t length, ErrorCode& error) = 0;
+
+	virtual instruction_t* GetInstruction(insetString_t str) = 0;
 
 	// this is virtual to allow changing of comment stuff
-	virtual void SkipWhitespace(const char* str, int& i, size_t length) = 0;
+	virtual void SkipWhitespace(const char* str, size_t& i, size_t length) = 0;
 
 	void ThrowException(ErrorCode error) {}
 
