@@ -65,7 +65,7 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 		if (error != ErrorCode::NO_ERROR)
 		{
 			ThrowException(error);
-			return;
+			return nullptr;
 		}
 
 		instruction_t* instruction = GetInstruction(instructionStr);
@@ -73,7 +73,7 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 		{
 			// we failed to find the instruction.
 			ThrowException(ErrorCode::UNRECOGNIZED_INSTRUCTION);
-			return;
+			return nullptr;
 		}
 
 
@@ -92,6 +92,7 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 				if (i >= length)
 				{
 					ThrowException(ErrorCode::UNEXPECTED_END_OF_FILE);
+					return nullptr;
 				}
 
 
@@ -102,7 +103,7 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 					if (hasParsedCondition)
 					{
 						ThrowException(ErrorCode::SECONDARY_CONDITION);
-						return;
+						return nullptr;
 					}
 
 					conditionReturn = ParseCondition(str, i, length, error);
@@ -111,7 +112,7 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 					if (error != ErrorCode::NO_ERROR)
 					{
 						ThrowException(error);
-						return;
+						return nullptr;
 					}
 
 					hasParsedCondition = true;
@@ -149,7 +150,7 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 				if (error != ErrorCode::NO_ERROR)
 				{
 					ThrowException(error);
-					return;
+					return nullptr;
 				}
 			}
 		}
@@ -161,7 +162,7 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 	{
 		// we should never hit an instruction without a $
 		ThrowException(ErrorCode::UNPREFIXED_INSTRUCTION);
-		return;
+		return nullptr;
 	}
 
 

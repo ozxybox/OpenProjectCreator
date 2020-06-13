@@ -119,6 +119,7 @@ struct arrayValue_t : public value_t
 	size_t length = 0;
 };
 
+class BaseParser;
 struct subblockValue_t : public value_t
 {
 	~subblockValue_t() { if(subblock) delete subblock; }
