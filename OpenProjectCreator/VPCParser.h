@@ -19,8 +19,9 @@ private:
 
 	virtual bool ParseCondition(const char* str, size_t& i, size_t length, ErrorCode& error);
 
-
 	virtual instruction_t* GetInstruction(insetString_t str);
+	virtual void CacheInstructionData(instructionData_t* instructionData) { m_instructionDataList.push_back(instructionData); }
+
 
 	std::vector<instructionData_t*> m_instructionDataList;
 	instruction_t* m_instructionSet;

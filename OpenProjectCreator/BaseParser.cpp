@@ -26,7 +26,7 @@ void BaseParser::Parse(const char* str, size_t length)
 		}
 		else
 		{
-			m_instructionDataList.push_back(instructionData);
+			CacheInstructionData(instructionData);
 		}
 
 	}
