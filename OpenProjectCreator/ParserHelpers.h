@@ -11,15 +11,15 @@ struct insetString_t
 
 enum class ErrorCode;
 
-insetString_t ReadQuotelessString(const char* str, size_t& i, size_t length, ErrorCode* error = 0);
-insetString_t ReadQuotedString(const char* str, size_t& i, size_t length, ErrorCode* error = 0);
-insetString_t ReadString(const char* str, size_t& i, size_t length, ErrorCode* error = 0);
-int ReadNumber(const char* str, size_t& i, size_t length, ErrorCode* error = 0);
+insetString_t ReadQuotelessString(const char* str, size_t& i, size_t length, ErrorCode& error);
+insetString_t ReadQuotedString(const char* str, size_t& i, size_t length, ErrorCode& error);
+insetString_t ReadString(const char* str, size_t& i, size_t length, ErrorCode& error);
+int ReadNumber(const char* str, size_t& i, size_t length, ErrorCode& error);
 
-void SeekEndOfQuotelessString(const char* str, size_t& i, size_t length, ErrorCode* error = 0);
-void SeekEndOfQuotedString(const char* str, size_t& i, size_t length, ErrorCode* error = 0);
-void SeekEndOfString(const char* str, size_t& i, size_t length, ErrorCode* error = 0);
-void SeekEndOfNumber(const char* str, size_t& i, size_t length, ErrorCode* error = 0);
+void SeekEndOfQuotelessString(const char* str, size_t& i, size_t length, ErrorCode& error);
+void SeekEndOfQuotedString(const char* str, size_t& i, size_t length, ErrorCode& error);
+void SeekEndOfString(const char* str, size_t& i, size_t length, ErrorCode& error);
+void SeekEndOfNumber(const char* str, size_t& i, size_t length, ErrorCode& error);
 
 inline bool IsWhitespace(char c)
 {

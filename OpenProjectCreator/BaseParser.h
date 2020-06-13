@@ -149,8 +149,8 @@ protected:
 
 	void ThrowException(ErrorCode error) {}
 
-	virtual value_t* ParseArgument(ArgumentType type, const char* str, size_t& i, size_t length, ErrorCode* error = 0);
-	virtual void SeekEndOfArgument(ArgumentType type, const char* str, size_t& i, size_t length, ErrorCode* error = 0);
+	virtual value_t* ParseArgument(ArgumentType type, const char* str, size_t& i, size_t length, ErrorCode& error);
+	virtual void SeekEndOfArgument(ArgumentType type, const char* str, size_t& i, size_t length, ErrorCode& error);
 
 };
 

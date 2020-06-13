@@ -34,7 +34,7 @@ void BaseParser::Parse(const char* str, size_t length)
 }
 
 // parse a value out of a string depending on its type and return it
-value_t* BaseParser::ParseArgument(ArgumentType type, const char* str, size_t& i, size_t length, ErrorCode* error)
+value_t* BaseParser::ParseArgument(ArgumentType type, const char* str, size_t& i, size_t length, ErrorCode& error)
 {
 
 	switch (type)
@@ -80,18 +80,18 @@ value_t* BaseParser::ParseArgument(ArgumentType type, const char* str, size_t& i
 		default:
 		{
 			// we should never hit an argument without a type
-			*error = ErrorCode::COMPILED_WITH_TYPELESS_ARGUMENT;
+			error = ErrorCode::COMPILED_WITH_TYPELESS_ARGUMENT;
 			return nullptr;
 		}
 	}
 
 	// if we reach this, the something's totally broken, or the type is unimplemented
-	*error = ErrorCode::NOT_IMPLEMENTED;
+	error = ErrorCode::NOT_IMPLEMENTED;
 	return nullptr;
 }
 
 
-void BaseParser::SeekEndOfArgument(ArgumentType type, const char* str, size_t & i, size_t length, ErrorCode * error)
+void BaseParser::SeekEndOfArgument(ArgumentType type, const char* str, size_t & i, size_t length, ErrorCode& error)
 {
 	switch (type)
 	{
@@ -115,15 +115,15 @@ void BaseParser::SeekEndOfArgument(ArgumentType type, const char* str, size_t & 
 		return;
 
 	case ArgumentType::SUBBLOCK:
-		SeekEndOfSubblock(str, i, length, *error);
+		SeekEndOfSubblock(str, i, length, error);
 		break;
 
 	default:
 		// we should never hit an argument without a type
-		*error = ErrorCode::COMPILED_WITH_TYPELESS_ARGUMENT;
+		error = ErrorCode::COMPILED_WITH_TYPELESS_ARGUMENT;
 		return;
 	}
 
 	// if we reach this, then something's totally broken, or the type is unimplemented
-	*error = ErrorCode::NOT_IMPLEMENTED;
+	error = ErrorCode::NOT_IMPLEMENTED;
 }

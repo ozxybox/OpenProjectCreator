@@ -55,7 +55,7 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 	{
 		i++;
 
-		insetString_t instructionStr = ReadQuotelessString(str, i, length, &error);
+		insetString_t instructionStr = ReadQuotelessString(str, i, length, error);
 		if (error != ErrorCode::NO_ERROR)
 		{
 			ThrowException(error);
@@ -99,7 +99,7 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 						return;
 					}
 
-					conditionReturn = ParseCondition(str, i, length, &error);
+					conditionReturn = ParseCondition(str, i, length, error);
 
 					// failed to parse the condition
 					if (error != ErrorCode::NO_ERROR)
@@ -130,13 +130,13 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 					}
 					else
 					{
-						instructionData->arguments[argument] = ParseArgument(instruction->argumentTypes[argument], str, i, length, &error);
+						instructionData->arguments[argument] = ParseArgument(instruction->argumentTypes[argument], str, i, length, error);
 					}
 				}
 				else
 				{
 					// if the condition returned false, seek our way out of this instruction
-					SeekEndOfArgument(instruction->argumentTypes[argument], str, i, length, &error);
+					SeekEndOfArgument(instruction->argumentTypes[argument], str, i, length, error);
 				}
 
 				// failed to parse the argument
@@ -279,12 +279,9 @@ void VPCParser::SkipWhitespace(const char* str, size_t& i, size_t length)
 	}
 }
 
-bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorCode* error)
+bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorCode& error)
 {
-	if (error != nullptr)
-	{
-		*error = ErrorCode::NOT_IMPLEMENTED;
-	}
+	error = ErrorCode::NOT_IMPLEMENTED;
 	return false;
 }
 
