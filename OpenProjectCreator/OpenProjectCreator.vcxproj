@@ -161,9 +161,11 @@
     <ClInclude Include="BaseParser.h" />
     <ClInclude Include="BaseProject.h" />
     <ClInclude Include="ConditionEvaluator.h" />
+    <ClInclude Include="Errors.h" />
     <ClInclude Include="ExtendedVPCParser.h" />
     <ClInclude Include="MacroStore.h" />
     <ClInclude Include="ParserHelpers.h" />
+    <ClInclude Include="Values.h" />
     <ClInclude Include="VisualStudioProject.h" />
     <ClInclude Include="VPCParser.h" />
   </ItemGroup>

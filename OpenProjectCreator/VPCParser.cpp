@@ -1,8 +1,11 @@
-#include "VPCParser.h"
-#include "ParserHelpers.h"
 #include <stdlib.h>
 
+#include "VPCParser.h"
+#include "ParserHelpers.h"
+#include "ConditionEvaluator.h"
+
 #define INSTRUCTION_PREFIX '$'
+#define MACRO_PREFIX '$'
 #define CONDITION_BEGIN '['
 #define CONDITION_END ']'
 #define SUBBLOCK_BEGIN '{'
@@ -286,10 +289,103 @@ void VPCParser::SkipWhitespace(const char* str, size_t& i, size_t length)
 	}
 }
 
+
 bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorCode& error)
 {
-	error = ErrorCode::NOT_IMPLEMENTED;
-	return false;
+	if (str[i] != CONDITION_BEGIN)
+	{
+		error = ErrorCode::CONDITION_MUST_BEGIN_WITH_BRACKET;
+		return false;
+	}
+
+	i++;
+
+	std::vector<conditionChunk_t> chunkList;
+
+	bool lastChunkWasOperator = false;
+
+	for (; i < length; i++)
+	{
+		SkipWhitespace(str, i, length);
+
+		if (i >= length)
+		{
+			error = ErrorCode::UNEXPECTED_END_OF_FILE;
+			return false;
+		}
+
+		char c = str[i];
+
+
+		//order must be macro, operator, number
+		//this is to prevent issues with the $ being registered as an operator or a negative as a minus
+
+		if (c == MACRO_PREFIX)
+		{
+			//parse out that macro
+			i++;
+
+			Macro* macro = m_macroStore.SearchForMacro(str + i, length - i);
+			if (!macro)
+			{
+				error = ErrorCode::MACRO_NOT_FOUND;
+				return false;
+			}
+
+			if (macro->GetType() != ValueType::NUMBER)
+			{
+				error = ErrorCode::EXPECTED_NUMBER;
+				return false;
+			}
+
+			i += macro->GetKeyLength();
+
+			conditionChunk_t valueChunk;
+			valueChunk.isOperator = false;
+
+			//we can safely dereference this since we know it's a number
+			valueChunk.value = *macro->GetValueInt();
+
+			chunkList.push_back(valueChunk);
+
+			lastChunkWasOperator = false;
+		}
+		else if (IsSymbol(c) && !lastChunkWasOperator)
+		{
+
+			ConditionOperator op = SearchForOperator(str + i, length - i, error);
+			if (error != ErrorCode::NO_ERROR)
+				return false;
+
+			conditionChunk_t opChunk;
+			opChunk.isOperator = true;
+			opChunk.operation = op;
+
+			chunkList.push_back(opChunk);
+
+			lastChunkWasOperator = true;
+		}
+		else if (IsNumber(c) || c == '-')
+		{
+			//parse the number
+
+			int number = ReadNumber(str, i, length, error);
+			if (error != ErrorCode::NO_ERROR)
+				return false;
+
+			conditionChunk_t condChunk;
+			condChunk.isOperator = false;
+			condChunk.value = number;
+
+
+			lastChunkWasOperator = false;
+		}
+
+	}
+	
+	return EvaluateCondition(chunkList.data(), error);
+
+
 }
 
 instruction_t* VPCParser::GetInstruction(insetString_t str)

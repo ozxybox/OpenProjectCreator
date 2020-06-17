@@ -68,5 +68,11 @@
     <ClInclude Include="VisualStudioProject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Values.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Errors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

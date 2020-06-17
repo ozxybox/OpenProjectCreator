@@ -1,5 +1,5 @@
 #include "BaseParser.h"
-
+#include "Values.h"
 
 void BaseParser::Parse(const char* str, size_t length)
 {

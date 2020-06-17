@@ -1,8 +1,12 @@
 #pragma once
 
-#include "BaseParser.h"
 #include <vector>
 
+#include "BaseParser.h"
+#include "MacroStore.h"
+
+#include "Values.h"
+#include "Errors.h"
 
 class VPCParser : public BaseParser
 {
@@ -23,9 +27,11 @@ private:
 	virtual instruction_t* GetInstruction(insetString_t str);
 	virtual void CacheInstructionData(instructionData_t* instructionData) { m_instructionDataList.push_back(instructionData); }
 
+	MacroStore m_macroStore;
 
 	std::vector<instructionData_t*> m_instructionDataList;
 	instruction_t* m_instructionSet;
+
 
 };
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ParserHelpers.h"
+#include "Errors.h"
 
 // super lazy. change this?
 #define ARGUMENT_MAX_COUNT 3
@@ -14,29 +15,12 @@ constexpr int NumberOfArgs(A ...)
 	return sizeof...(A);
 }
 
-#define DEFINE_INSTRUCTION(name, function, isPreprocessor, ...) {name, sizeof(name), {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, &function},
+#define DEFINE_INSTRUCTION(name, function, isPreprocessor, ...) {name, sizeof(name) / sizeof(char), {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, &function},
 
 // has its own custom set of sub instructions
 // count is a smelly quick fix. FIX SOON!
-#define BEGIN_CUSTOM_INSTRUCTION(name, function, isPreprocessor, count, ...) {name, sizeof(name), {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, &function, new instruction_t[count] {
+#define BEGIN_CUSTOM_INSTRUCTION(name, function, isPreprocessor, count, ...) {name, sizeof(name) / sizeof(char), {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, &function, new instruction_t[count] {
 #define END_CUSTOM_INSTRUCTION() }},
-
-
-enum class ErrorCode {
-	NO_ERROR = 0,
-	UNEXPECTED_END_OF_FILE,
-	NUMBER_WITH_NO_NUMBERS,
-	UNPREFIXED_INSTRUCTION,
-	UNRECOGNIZED_INSTRUCTION,
-	UNCLOSED_MULTILINE_COMMENT,
-	COMPILED_WITH_TYPELESS_ARGUMENT,
-	STRING_NOT_BEGUN_WITH_QUOTE,
-	INVALID_QUOTELESS_STRING,
-	NOT_IMPLEMENTED,
-	SECONDARY_CONDITION,
-	INCOMPLETE_QUOTED_STRING,
-	SUBBLOCK_MUST_BEGIN_WITH_BRACE
-};
 
 
 enum class ArgumentType
@@ -44,16 +28,6 @@ enum class ArgumentType
 	STRING,
 	QUOTELESS_STRING,
 	QUOTED_STRING,
-	NUMBER,
-	//contains just a single element
-	ARRAY,
-	//can contain instructions
-	SUBBLOCK
-};
-
-enum class ValueType
-{
-	STRING,
 	NUMBER,
 	//contains just a single element
 	ARRAY,
@@ -94,38 +68,6 @@ struct instructionData_t
 
 
 
-struct value_t
-{
-	ValueType type;
-};
-
-struct stringValue_t : public value_t
-{
-	ValueType type = ValueType::STRING;
-	insetString_t string;
-};
-
-struct numberValue_t : public value_t
-{
-	ValueType type = ValueType::NUMBER;
-	int number;
-};
-
-struct arrayValue_t : public value_t
-{
-	~arrayValue_t() { if (array) delete[] array; }
-	ValueType type = ValueType::ARRAY;
-	value_t* array = 0;
-	size_t length = 0;
-};
-
-class BaseParser;
-struct subblockValue_t : public value_t
-{
-	~subblockValue_t() { if(subblock) delete subblock; }
-	ValueType type = ValueType::SUBBLOCK;
-	BaseParser* subblock = 0;
-};
 
 
 class BaseParser
