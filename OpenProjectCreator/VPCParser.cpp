@@ -316,6 +316,8 @@ bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorC
 
 		char c = str[i];
 
+		if (c == CONDITION_END)
+			break;
 
 		//order must be macro, operator, number
 		//this is to prevent issues with the $ being registered as an operator or a negative as a minus
