@@ -375,17 +375,19 @@ bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorC
 			if (error != ErrorCode::NO_ERROR)
 				return false;
 
+			numberValue_t* nv = new numberValue_t;
+			nv->number = number;
+
 			conditionChunk_t condChunk;
 			condChunk.isOperator = false;
-			condChunk.value = number;
-
+			condChunk.value = nv;
 
 			lastChunkWasOperator = false;
 		}
 
 	}
 	
-	return EvaluateCondition(chunkList.data(), error);
+	return EvaluateCondition(chunkList.data(), chunkList.size(), error);
 
 
 }

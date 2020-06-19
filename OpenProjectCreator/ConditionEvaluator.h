@@ -6,6 +6,11 @@ enum class ConditionOperator
 {
 	NONE = -1,
 
+	// not really an operator, but a chunk for sure!
+	OPEN_PARENTHESIS,
+	CLOSE_PARENTHESIS,
+
+
 	LOGICAL_NOT,
 	BITWISE_NOT,
 
@@ -39,7 +44,7 @@ struct conditionChunk_t
 	union
 	{
 		ConditionOperator operation;
-		int value;
+		value_t* value;
 	};
 
 	bool isOperator;
@@ -47,4 +52,4 @@ struct conditionChunk_t
 
 
 ConditionOperator SearchForOperator(const char* str, size_t length, ErrorCode& error);
-bool EvaluateCondition(conditionChunk_t* chunkList, ErrorCode& error);
+bool EvaluateCondition(conditionChunk_t* chunkList, size_t chunkCount, ErrorCode& error);
