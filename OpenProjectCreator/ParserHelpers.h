@@ -3,18 +3,28 @@
 #define END_LINE '\n'
 
 
-struct insetString_t
+class InsetString
 {
+public:
+	InsetString() { string = 0; length = 0; }
+	InsetString(const char* str, size_t len) { string = str; length = len; }
+
+
+	char* Copy();
+
+
 	const char* string;
 	size_t length;
 };
 
+bool operator==(const InsetString& lhs, const InsetString& rhs);
+bool operator!=(const InsetString& lhs, const InsetString& rhs);
 
 enum class ErrorCode;
 
-insetString_t ReadQuotelessString(const char* str, size_t& i, size_t length, ErrorCode& error);
-insetString_t ReadQuotedString(const char* str, size_t& i, size_t length, ErrorCode& error);
-insetString_t ReadString(const char* str, size_t& i, size_t length, ErrorCode& error);
+InsetString ReadQuotelessString(const char* str, size_t& i, size_t length, ErrorCode& error);
+InsetString ReadQuotedString(const char* str, size_t& i, size_t length, ErrorCode& error);
+InsetString ReadString(const char* str, size_t& i, size_t length, ErrorCode& error);
 int ReadNumber(const char* str, size_t& i, size_t length, ErrorCode& error);
 
 void SeekEndOfQuotelessString(const char* str, size_t& i, size_t length, ErrorCode& error);

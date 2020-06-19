@@ -64,7 +64,7 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 	{
 		i++;
 
-		insetString_t instructionStr = ReadQuotelessString(str, i, length, error);
+		InsetString instructionStr = ReadQuotelessString(str, i, length, error);
 		if (error != ErrorCode::NO_ERROR)
 		{
 			ThrowException(error);
@@ -392,7 +392,7 @@ bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorC
 
 }
 
-instruction_t* VPCParser::GetInstruction(insetString_t str)
+instruction_t* VPCParser::GetInstruction(InsetString str)
 {
 	return nullptr;
 }

@@ -1,10 +1,40 @@
 #include "ParserHelpers.h"
 #include "BaseParser.h"
+#include <cstring>
 
 // hopefully nothing should have to change these...
 #define BLOCK_START        '{'
 #define BLOCK_END          '}'
 #define STRING_QUOTE       '"'
+
+
+
+bool operator==(const InsetString& lhs, const InsetString& rhs)
+{
+	// if the lengths aren't the same, the string isn't for sure.
+	if(lhs.length != rhs.length)
+		return false;
+
+	return strncmp(lhs.string, rhs.string, lhs.length) == 0;
+}
+
+bool operator!=(const InsetString& lhs, const InsetString& rhs)
+{
+	// if the lengths aren't the same, the string isn't for sure.
+	if (lhs.length != rhs.length)
+		return true;
+
+	return strncmp(lhs.string, rhs.string, lhs.length) != 0;
+}
+char* InsetString::Copy()
+{
+
+	char* copy = new char[length + 1];
+	copy[length] = 0;
+	memcpy(copy, string, length);
+
+}
+
 
 
 ////////////////
@@ -13,9 +43,10 @@
 
 
 
-insetString_t ReadQuotelessString(const char* str, size_t& i, size_t length, ErrorCode& error)
+
+InsetString ReadQuotelessString(const char* str, size_t& i, size_t length, ErrorCode& error)
 {
-	insetString_t inset;
+	InsetString inset;
 
 	//first char must not be a symbol that's used by other types or whitespace
 	char c = str[i];
@@ -48,9 +79,9 @@ insetString_t ReadQuotelessString(const char* str, size_t& i, size_t length, Err
 	return inset;
 }
 
-insetString_t ReadQuotedString(const char* str, size_t& i, size_t length, ErrorCode& error)
+InsetString ReadQuotedString(const char* str, size_t& i, size_t length, ErrorCode& error)
 {
-	insetString_t inset;
+	InsetString inset;
 
 	//first character should be a quote
 	if (str[i] != STRING_QUOTE)
@@ -84,7 +115,7 @@ insetString_t ReadQuotedString(const char* str, size_t& i, size_t length, ErrorC
 	return inset;
 }
 
-insetString_t ReadString(const char* str, size_t& i, size_t length, ErrorCode& error)
+InsetString ReadString(const char* str, size_t& i, size_t length, ErrorCode& error)
 {
 	if (str[i] == STRING_QUOTE)
 		return ReadQuotedString(str, i, length, error);

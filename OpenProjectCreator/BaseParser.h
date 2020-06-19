@@ -86,7 +86,7 @@ protected:
 	virtual void ReadSubblock(const char* str, size_t& i, size_t length, ErrorCode& error) = 0;
 	virtual void SeekEndOfSubblock(const char* str, size_t& i, size_t length, ErrorCode& error) = 0;
 
-	virtual instruction_t* GetInstruction(insetString_t str) = 0;
+	virtual instruction_t* GetInstruction(InsetString str) = 0;
 	virtual void CacheInstructionData(instructionData_t* instructionData) = 0;
 
 	// this is virtual to allow changing of comment stuff

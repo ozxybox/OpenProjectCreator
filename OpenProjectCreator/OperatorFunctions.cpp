@@ -171,18 +171,7 @@ value_t* Operator_EqualTo(value_t* left, value_t* right, ErrorCode& error)
 		ret = static_cast<booleanValue_t*>(left)->boolean == static_cast<booleanValue_t*>(right)->boolean;
 		break;
 	case ValueType::STRING:
-		stringValue_t* leftString = static_cast<stringValue_t*>(left);
-		stringValue_t* rightString = static_cast<stringValue_t*>(right);
-
-		//if the lengths are equal, the values aren't equal for sure
-		if (leftString->string.length != rightString->string.length)
-		{
-			ret = false;
-			break;
-		}
-
-		ret = strncmp(leftString->string.string, rightString->string.string, leftString->string.length) == 0;
-
+		ret = static_cast<stringValue_t*>(left)->string == static_cast<stringValue_t*>(right)->string;
 		break;
 	default:
 		error = ErrorCode::NOT_IMPLEMENTED;
@@ -216,18 +205,7 @@ value_t* Operator_NotEqualTo(value_t* left, value_t* right, ErrorCode& error)
 		ret = static_cast<booleanValue_t*>(left)->boolean != static_cast<booleanValue_t*>(right)->boolean;
 		break;
 	case ValueType::STRING:
-		stringValue_t* leftString = static_cast<stringValue_t*>(left);
-		stringValue_t* rightString = static_cast<stringValue_t*>(right);
-
-		//if the lengths are equal, the values aren't equal for sure
-		if (leftString->string.length != rightString->string.length)
-		{
-			ret = true;
-			break;
-		}
-
-		ret = strncmp(leftString->string.string, rightString->string.string, leftString->string.length) != 0;
-
+		ret = static_cast<stringValue_t*>(left)->string != static_cast<stringValue_t*>(right)->string;
 		break;
 	default:
 		error = ErrorCode::NOT_IMPLEMENTED;

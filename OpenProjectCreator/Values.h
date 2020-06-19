@@ -22,7 +22,7 @@ struct value_t
 struct stringValue_t : public value_t
 {
 	ValueType type = ValueType::STRING;
-	insetString_t string;
+	InsetString string;
 };
 
 struct numberValue_t : public value_t
