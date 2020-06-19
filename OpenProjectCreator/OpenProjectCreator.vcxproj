@@ -153,6 +153,7 @@
     <ClCompile Include="ExtendedVPCParser.cpp" />
     <ClCompile Include="MacroStore.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="OperatorFunctions.cpp" />
     <ClCompile Include="ParserHelpers.cpp" />
     <ClCompile Include="VisualStudioProject.cpp" />
     <ClCompile Include="VPCParser.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Errors.h" />
     <ClInclude Include="ExtendedVPCParser.h" />
     <ClInclude Include="MacroStore.h" />
+    <ClInclude Include="OperatorFunctions.h" />
     <ClInclude Include="ParserHelpers.h" />
     <ClInclude Include="Values.h" />
     <ClInclude Include="VisualStudioProject.h" />

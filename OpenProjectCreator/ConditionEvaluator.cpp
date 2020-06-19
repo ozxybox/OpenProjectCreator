@@ -1,9 +1,10 @@
 #include <cstring>
 
 #include "ConditionEvaluator.h"
+#include "OperatorFunctions.h"
 #include "Errors.h"
 
-#define MAX_PRECEDEDCE 12
+#define PRECEDEDCE_COUNT 10
 
 enum class OperatorType {
 	DEAD,
@@ -32,24 +33,39 @@ struct operator_t
 #define DEFINE_SHORT_CIRCUIT_OPERATOR(key, precedence, function, shortCircuit) { key, precedence, sizeof(key) / sizeof(char), OperatorType::BINARY_SHORTCIRCUIT, function, shortCircuit },
 
 
-
-value_t* Operator_Logical_Not(value_t* left, value_t* right, ErrorCode& error)
-{
-
-	error = ErrorCode::INVALID_OPERATION;
-	return nullptr;
-}
-
-
 //MUST BE IN THE SAME ORDER AS THE ENUM!
 operator_t g_operators[] =
 {
 
-	DEFINE_OPERATOR("(", 0, OperatorType::NULLARY, 0)
-	DEFINE_OPERATOR(")", 0, OperatorType::NULLARY, 0)
+	DEFINE_OPERATOR("(",  0, OperatorType::NULLARY, 0)
+	DEFINE_OPERATOR(")",  0, OperatorType::NULLARY, 0)
 
-	DEFINE_OPERATOR("!", 1, OperatorType::UNARY, Operator_Logical_Not)
-	
+	DEFINE_OPERATOR("!",  1, OperatorType::UNARY, Operator_Logical_Not)
+	DEFINE_OPERATOR("~",  1, OperatorType::UNARY, Operator_Bitwise_Not)
+
+	DEFINE_OPERATOR("<<", 2, OperatorType::BINARY, Operator_Bitwise_LeftShift)
+	DEFINE_OPERATOR(">>", 2, OperatorType::BINARY, Operator_Bitwise_RightShift)
+
+
+	DEFINE_OPERATOR("<",  3, OperatorType::BINARY, Operator_LessThan)
+	DEFINE_OPERATOR("<=", 3, OperatorType::BINARY, Operator_LessThanOrEqualTo)
+	DEFINE_OPERATOR(">",  3, OperatorType::BINARY, Operator_GreaterThan)
+	DEFINE_OPERATOR(">=", 3, OperatorType::BINARY, Operator_GreaterThanOrEqualTo)
+
+	DEFINE_OPERATOR("==", 4, OperatorType::BINARY, Operator_EqualTo)
+	DEFINE_OPERATOR("!=", 4, OperatorType::BINARY, Operator_NotEqualTo)
+
+
+	DEFINE_OPERATOR("&", 5, OperatorType::BINARY, Operator_Bitwise_AND)
+
+	DEFINE_OPERATOR("^", 6, OperatorType::BINARY, Operator_Bitwise_XOR)
+
+	DEFINE_OPERATOR("|", 7, OperatorType::BINARY, Operator_Bitwise_OR)
+
+	DEFINE_SHORT_CIRCUIT_OPERATOR("&&", 8, Operator_Logical_And, Operator_ShortCircuit_Logical_And)
+
+	DEFINE_SHORT_CIRCUIT_OPERATOR("||", 9, Operator_Logical_Or, Operator_ShortCircuit_Logical_Or)
+
 
 	{0}
 };
@@ -108,6 +124,9 @@ operator_t* GetOperator(conditionChunk_t op)
 inline void NullChunk(conditionChunk_t* chunk)
 {
 	chunk->isOperator = false;
+
+	if (chunk->value)
+		delete chunk->value;
 	chunk->value = nullptr;
 }
 
@@ -122,7 +141,7 @@ value_t* EvaluateConditionInternal(conditionChunk_t* chunkList, size_t chunkCoun
 
 	bool lastWasOperator = false;
 
-	for(int precedence = 0; precedence < MAX_PRECEDEDCE; precedence++)
+	for(int precedence = 0; precedence < PRECEDEDCE_COUNT; precedence++)
 	{
 		for (int i = 0; i < chunkCount; i++)
 		{
@@ -194,6 +213,9 @@ value_t* EvaluateConditionInternal(conditionChunk_t* chunkList, size_t chunkCoun
 
 					value_t* ret = op->function(nullptr, chunkList[i + 1].value, error);
 
+					if (error != ErrorCode::NO_ERROR)
+						return;
+
 					//update the value and null the operator
 					lastValidValueIndex = i + 1;
 					chunkList[i + 1].value = ret;
@@ -211,6 +233,9 @@ value_t* EvaluateConditionInternal(conditionChunk_t* chunkList, size_t chunkCoun
 					}
 
 					value_t* ret = op->function(chunkList[lastValidValueIndex].value, chunkList[i + 1].value, error);
+
+					if (error != ErrorCode::NO_ERROR)
+						return;
 
 					//reuse the last valid's value and null the operator and next value
 					chunkList[lastValidValueIndex].value = ret;
@@ -232,7 +257,10 @@ value_t* EvaluateConditionInternal(conditionChunk_t* chunkList, size_t chunkCoun
 					{
 						//but since we're short circuiting, we only need the left side...
 						value_t* ret = op->shortCircuit(chunkList[lastValidValueIndex].value, error);
-						
+
+						if (error != ErrorCode::NO_ERROR)
+							return;
+
 						//if this was successful, we have to null out everything to the right that we can ignore
 						if (ret)
 						{
@@ -266,6 +294,9 @@ value_t* EvaluateConditionInternal(conditionChunk_t* chunkList, size_t chunkCoun
 						//if we reach here, the short failed earlier so we're just treating it like a normal operation
 
 						value_t* ret = op->function(chunkList[lastValidValueIndex].value, chunkList[i + 1].value, error);
+
+						if (error != ErrorCode::NO_ERROR)
+							return;
 
 						//reuse the last valid's value and null the operator and next value
 						chunkList[lastValidValueIndex].value = ret;
@@ -322,7 +353,11 @@ bool EvaluateCondition(conditionChunk_t* chunkList, size_t chunkCount, ErrorCode
 
 	//we dont want to constantly copy this array, so we give the actual evaulator a different name 
 	value_t* ret = EvaluateConditionInternal(chunks, chunkCount, true, error);
-	if (ret->type != ValueType::BOOLEAN)
+
+	if (error != ErrorCode::NO_ERROR)
+		return;
+
+	if (!ret || ret->type != ValueType::BOOLEAN)
 	{
 		//what
 		error = ErrorCode::INVALID_CONDITION;
