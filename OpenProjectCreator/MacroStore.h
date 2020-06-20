@@ -2,11 +2,13 @@
 
 #include "Values.h"
 
+
+// normal macros are read only. Nothing should have to modify these once they're created
 class Macro
 {
 public:
 
-	Macro();
+	Macro(InsetString key, InsetString value);
 	~Macro();
 
 	const char* GetKey() { return m_keyStr; }
@@ -30,7 +32,7 @@ public:
 	//returns a pointer to the bool. Will be nullptr if the type is invalid!
 	bool* GetValueBoolean() { return (GetType() == ValueType::BOOLEAN) ? &m_boolean.boolean : nullptr; }
 
-private:
+protected:
 	const char* m_keyStr;
 	size_t m_keyLength;
 
@@ -49,15 +51,48 @@ private:
 };
 
 
+class LinkedMacro : public Macro
+{
+public:
+	LinkedMacro(InsetString key, InsetString value) : Macro(key, value) {}
+private:
+
+	void SetValue(InsetString value) { m_valueStr = value.string;  m_valueLength = value.length; }
+
+	LinkedMacro* m_next;
+
+	friend class LinkedMacroList;
+
+};
+
+// I'm really not a fan of this, but we shouldn't have too many macros I guess?
+class LinkedMacroList
+{
+public:
+	~LinkedMacroList();
+
+
+	LinkedMacro* m_list;
+	LinkedMacro* m_last;
+
+	Macro* Get(InsetString key);
+
+	// this function looks for a macro at the start of a string, and if it finds one, it returns it. Otherwise, it returns nullptr
+	Macro* SearchFor(const char* str, size_t length);
+	void Add(InsetString key, InsetString value);
+	void Set(InsetString key, InsetString value);
+};
+
 class MacroStore
 {
 public:
-	void AddMacro(const char* key, const char* value);
+	void SetMacro(const char* key, const char* value);
 	const char* GetMacroValue(const char* key);
 
 	// this function looks for a macro at the start of a string, and if it finds one, it returns it. Otherwise, it returns nullptr
 	Macro* SearchForMacro(const char* str, size_t length);
 private:
 
+	LinkedMacroList m_macroList;
 };
 
