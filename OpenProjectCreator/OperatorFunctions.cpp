@@ -8,6 +8,99 @@
 //is there a good way to shrink this?
 //might be worth it to migrate these into the actual value structs themselves 
 
+value_t* Operator_Multiply(value_t* left, value_t* right, ErrorCode& error)
+{
+	if (left->type != ValueType::NUMBER || right->type != ValueType::NUMBER)
+	{
+		error = ErrorCode::INVALID_CONDITION_PARAMETER;
+		return nullptr;
+	}
+
+	numberValue_t* numberRet = new numberValue_t;
+
+	numberRet->number = static_cast<numberValue_t*>(left)->number * static_cast<numberValue_t*>(right)->number;
+
+	return numberRet;
+}
+
+value_t* Operator_Divide(value_t* left, value_t* right, ErrorCode& error)
+{
+	if (left->type != ValueType::NUMBER || right->type != ValueType::NUMBER)
+	{
+		error = ErrorCode::INVALID_CONDITION_PARAMETER;
+		return nullptr;
+	}
+
+	numberValue_t* numberRet = new numberValue_t;
+
+	int rightValue = static_cast<numberValue_t*>(right)->number;
+
+	if (rightValue == 0)
+	{
+		error = ErrorCode::DIVIDE_BY_ZERO;
+		delete numberRet;
+		return nullptr;
+	}
+
+	numberRet->number = static_cast<numberValue_t*>(left)->number / rightValue;
+
+	return numberRet;
+}
+
+value_t* Operator_Remainder(value_t* left, value_t* right, ErrorCode& error)
+{
+	if (left->type != ValueType::NUMBER || right->type != ValueType::NUMBER)
+	{
+		error = ErrorCode::INVALID_CONDITION_PARAMETER;
+		return nullptr;
+	}
+
+	numberValue_t* numberRet = new numberValue_t;
+
+	int rightValue = static_cast<numberValue_t*>(right)->number;
+
+	if (rightValue == 0)
+	{
+		error = ErrorCode::DIVIDE_BY_ZERO;
+		delete numberRet;
+		return nullptr;
+	}
+
+	numberRet->number = static_cast<numberValue_t*>(left)->number % rightValue;
+
+	return numberRet;
+}
+
+value_t* Operator_Add(value_t* left, value_t* right, ErrorCode& error)
+{
+	if (left->type != ValueType::NUMBER || right->type != ValueType::NUMBER)
+	{
+		error = ErrorCode::INVALID_CONDITION_PARAMETER;
+		return nullptr;
+	}
+
+	numberValue_t* numberRet = new numberValue_t;
+
+	numberRet->number = static_cast<numberValue_t*>(left)->number + static_cast<numberValue_t*>(right)->number;
+
+	return numberRet;
+}
+
+value_t* Operator_Subtract(value_t* left, value_t* right, ErrorCode& error)
+{
+	if (left->type != ValueType::NUMBER || right->type != ValueType::NUMBER)
+	{
+		error = ErrorCode::INVALID_CONDITION_PARAMETER;
+		return nullptr;
+	}
+
+	numberValue_t* numberRet = new numberValue_t;
+
+	numberRet->number = static_cast<numberValue_t*>(left)->number - static_cast<numberValue_t*>(right)->number;
+
+	return numberRet;
+}
+
 value_t* Operator_Logical_Not(value_t* left, value_t* right, ErrorCode& error)
 {
 

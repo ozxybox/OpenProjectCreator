@@ -40,31 +40,40 @@ operator_t g_operators[] =
 	DEFINE_OPERATOR("(",  0, OperatorType::NULLARY, 0)
 	DEFINE_OPERATOR(")",  0, OperatorType::NULLARY, 0)
 
-	DEFINE_OPERATOR("!",  1, OperatorType::UNARY, Operator_Logical_Not)
-	DEFINE_OPERATOR("~",  1, OperatorType::UNARY, Operator_Bitwise_Not)
 
-	DEFINE_OPERATOR("<<", 2, OperatorType::BINARY, Operator_Bitwise_LeftShift)
-	DEFINE_OPERATOR(">>", 2, OperatorType::BINARY, Operator_Bitwise_RightShift)
+	DEFINE_OPERATOR("*",  1, OperatorType::BINARY, Operator_Multiply)
+	DEFINE_OPERATOR("/",  1, OperatorType::BINARY, Operator_Divide)
+	DEFINE_OPERATOR("%",  1, OperatorType::BINARY, Operator_Remainder)
 
-
-	DEFINE_OPERATOR("<",  3, OperatorType::BINARY, Operator_LessThan)
-	DEFINE_OPERATOR("<=", 3, OperatorType::BINARY, Operator_LessThanOrEqualTo)
-	DEFINE_OPERATOR(">",  3, OperatorType::BINARY, Operator_GreaterThan)
-	DEFINE_OPERATOR(">=", 3, OperatorType::BINARY, Operator_GreaterThanOrEqualTo)
-
-	DEFINE_OPERATOR("==", 4, OperatorType::BINARY, Operator_EqualTo)
-	DEFINE_OPERATOR("!=", 4, OperatorType::BINARY, Operator_NotEqualTo)
+	DEFINE_OPERATOR("+",  2, OperatorType::BINARY, Operator_Add)
+	DEFINE_OPERATOR("-",  2, OperatorType::BINARY, Operator_Subtract)
 
 
-	DEFINE_OPERATOR("&", 5, OperatorType::BINARY, Operator_Bitwise_AND)
+	DEFINE_OPERATOR("!",  3, OperatorType::UNARY, Operator_Logical_Not)
+	DEFINE_OPERATOR("~",  3, OperatorType::UNARY, Operator_Bitwise_Not)
 
-	DEFINE_OPERATOR("^", 6, OperatorType::BINARY, Operator_Bitwise_XOR)
+	DEFINE_OPERATOR("<<", 4, OperatorType::BINARY, Operator_Bitwise_LeftShift)
+	DEFINE_OPERATOR(">>", 4, OperatorType::BINARY, Operator_Bitwise_RightShift)
 
-	DEFINE_OPERATOR("|", 7, OperatorType::BINARY, Operator_Bitwise_OR)
 
-	DEFINE_SHORT_CIRCUIT_OPERATOR("&&", 8, Operator_Logical_And, Operator_ShortCircuit_Logical_And)
+	DEFINE_OPERATOR("<",  5, OperatorType::BINARY, Operator_LessThan)
+	DEFINE_OPERATOR("<=", 5, OperatorType::BINARY, Operator_LessThanOrEqualTo)
+	DEFINE_OPERATOR(">",  5, OperatorType::BINARY, Operator_GreaterThan)
+	DEFINE_OPERATOR(">=", 5, OperatorType::BINARY, Operator_GreaterThanOrEqualTo)
 
-	DEFINE_SHORT_CIRCUIT_OPERATOR("||", 9, Operator_Logical_Or, Operator_ShortCircuit_Logical_Or)
+	DEFINE_OPERATOR("==", 6, OperatorType::BINARY, Operator_EqualTo)
+	DEFINE_OPERATOR("!=", 6, OperatorType::BINARY, Operator_NotEqualTo)
+
+
+	DEFINE_OPERATOR("&",  7, OperatorType::BINARY, Operator_Bitwise_AND)
+
+	DEFINE_OPERATOR("^",  8, OperatorType::BINARY, Operator_Bitwise_XOR)
+
+	DEFINE_OPERATOR("|",  9, OperatorType::BINARY, Operator_Bitwise_OR)
+
+	DEFINE_SHORT_CIRCUIT_OPERATOR("&&", 10, Operator_Logical_And, Operator_ShortCircuit_Logical_And)
+
+	DEFINE_SHORT_CIRCUIT_OPERATOR("||", 11, Operator_Logical_Or, Operator_ShortCircuit_Logical_Or)
 
 
 	{0}

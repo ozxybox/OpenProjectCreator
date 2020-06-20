@@ -12,6 +12,11 @@
 //is there a good way to shrink this?
 //might be worth it to migrate these into the actual value structs themselves 
 
+value_t* Operator_Multiply(value_t* left, value_t* right, ErrorCode& error);
+value_t* Operator_Divide(value_t* left, value_t* right, ErrorCode& error);
+value_t* Operator_Remainder(value_t* left, value_t* right, ErrorCode& error);
+value_t* Operator_Add(value_t* left, value_t* right, ErrorCode& error);
+value_t* Operator_Subtract(value_t* left, value_t* right, ErrorCode& error);
 value_t* Operator_Logical_Not(value_t* left, value_t* right, ErrorCode& error);
 value_t* Operator_Bitwise_Not(value_t* left, value_t* right, ErrorCode& error);
 value_t* Operator_Bitwise_LeftShift(value_t* left, value_t* right, ErrorCode& error);
