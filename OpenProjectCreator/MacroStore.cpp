@@ -15,7 +15,7 @@ Macro::Macro(InsetString key, InsetString value)
 	// check the value and see if it might be a valid type
 	
 	bool valueIsNumber = true;
-	for (int i = 0; i < m_valueLength; i++)
+	for (size_t i = 0; i < m_valueLength; i++)
 	{
 		char c = m_valueStr[i];
 		if (!IsNumber(c) && c != '-' && c != '+')

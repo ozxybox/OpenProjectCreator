@@ -1,6 +1,19 @@
 #include "BaseParser.h"
 #include "Values.h"
 
+
+instructionData_t::~instructionData_t()
+{
+	if (arguments)
+	{
+		for (int i = 0; i < instruction->argumentCount; i++)
+			delete arguments[i];
+
+		delete[] arguments;
+	}
+}
+
+
 void BaseParser::Parse(const char* str, size_t length)
 {
 	ErrorCode error = ErrorCode::NO_ERROR;

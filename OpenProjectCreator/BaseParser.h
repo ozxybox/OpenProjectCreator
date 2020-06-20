@@ -53,15 +53,7 @@ struct instruction_t
 struct value_t;
 struct instructionData_t
 {
-	~instructionData_t() { 
-		if (arguments) 
-		{ 
-			for (int i = 0; i < instruction->argumentCount; i++)
-				delete arguments[i];
-			
-			delete[] arguments; 
-		}
-	}
+	~instructionData_t();
 	instruction_t* instruction;
 	value_t** arguments = 0;
 };

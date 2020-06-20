@@ -143,7 +143,7 @@ value_t* EvaluateConditionInternal(conditionChunk_t* chunkList, size_t chunkCoun
 
 	for(int precedence = 0; precedence < PRECEDEDCE_COUNT; precedence++)
 	{
-		for (int i = 0; i < chunkCount; i++)
+		for (size_t i = 0; i < chunkCount; i++)
 		{
 			if (chunkList[i].isOperator)
 			{

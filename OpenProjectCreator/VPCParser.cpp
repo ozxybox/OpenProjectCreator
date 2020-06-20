@@ -118,6 +118,12 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 						return nullptr;
 					}
 
+					// gotta clean up the instruction data. No use for it anymore since the condition was false
+					if (!conditionReturn)
+					{
+						delete instructionData;
+						instructionData = nullptr;
+					}
 					hasParsedCondition = true;
 				}
 
@@ -158,7 +164,7 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 			}
 		}
 
-
+		return instructionData;
 
 	}
 	else

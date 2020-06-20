@@ -23,28 +23,28 @@ bool operator!=(const InsetString& lhs, const InsetString& rhs);
 enum class ErrorCode;
 
 InsetString ReadQuotelessString(const char* str, size_t& i, size_t length, ErrorCode& error);
-InsetString ReadQuotelessString(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return ReadQuotelessString(str, i, length, error); }
+inline InsetString ReadQuotelessString(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return ReadQuotelessString(str, i, length, error); }
 
 InsetString ReadQuotedString(const char* str, size_t& i, size_t length, ErrorCode& error);
-InsetString ReadQuotedString(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return ReadQuotedString(str, i, length, error); }
+inline InsetString ReadQuotedString(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return ReadQuotedString(str, i, length, error); }
 
 InsetString ReadString(const char* str, size_t& i, size_t length, ErrorCode& error);
-InsetString ReadString(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return ReadString(str, i, length, error); }
+inline InsetString ReadString(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return ReadString(str, i, length, error); }
 
 int ReadNumber(const char* str, size_t& i, size_t length, ErrorCode& error);
-int ReadNumber(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return ReadNumber(str, i, length, error); }
+inline int ReadNumber(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return ReadNumber(str, i, length, error); }
 
 void SeekEndOfQuotelessString(const char* str, size_t& i, size_t length, ErrorCode& error);
-void SeekEndOfQuotelessString(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return SeekEndOfQuotelessString(str, i, length, error); }
+inline void SeekEndOfQuotelessString(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return SeekEndOfQuotelessString(str, i, length, error); }
 
 void SeekEndOfQuotedString(const char* str, size_t& i, size_t length, ErrorCode& error);
-void SeekEndOfQuotedString(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return SeekEndOfQuotedString(str, i, length, error); }
+inline void SeekEndOfQuotedString(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return SeekEndOfQuotedString(str, i, length, error); }
 
 void SeekEndOfString(const char* str, size_t& i, size_t length, ErrorCode& error);
-void SeekEndOfString(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return SeekEndOfString(str, i, length, error); }
+inline void SeekEndOfString(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return SeekEndOfString(str, i, length, error); }
 
 void SeekEndOfNumber(const char* str, size_t& i, size_t length, ErrorCode& error);
-void SeekEndOfNumber(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return SeekEndOfNumber(str, i, length, error); }
+inline void SeekEndOfNumber(const char* str, size_t length, ErrorCode& error) { size_t i = 0; return SeekEndOfNumber(str, i, length, error); }
 
 inline bool IsWhitespace(char c)
 {

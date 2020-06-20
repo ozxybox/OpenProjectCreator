@@ -16,6 +16,7 @@ enum class ValueType
 
 struct value_t
 {
+	virtual ~value_t() {}
 	ValueType type;
 };
 
