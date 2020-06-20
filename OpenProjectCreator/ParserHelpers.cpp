@@ -32,7 +32,7 @@ char* InsetString::Copy()
 	char* copy = new char[length + 1];
 	copy[length] = 0;
 	memcpy(copy, string, length);
-
+	return copy;
 }
 
 

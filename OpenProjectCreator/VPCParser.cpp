@@ -342,11 +342,14 @@ bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorC
 
 			i += macro->GetKeyLength();
 
+			numberValue_t* nv = new numberValue_t;
+			//we can safely dereference this since we know it's a number
+			nv->number = *macro->GetValueInt();
+
 			conditionChunk_t valueChunk;
 			valueChunk.isOperator = false;
-
-			//we can safely dereference this since we know it's a number
-			valueChunk.value = *macro->GetValueInt();
+			valueChunk.value = nv;
+			
 
 			chunkList.push_back(valueChunk);
 

@@ -41,6 +41,7 @@ enum class ConditionOperator
 
 struct conditionChunk_t
 {
+	~conditionChunk_t() { if (!isOperator && value) delete value; }
 	union
 	{
 		ConditionOperator operation;

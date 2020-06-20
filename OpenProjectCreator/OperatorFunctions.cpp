@@ -157,7 +157,7 @@ value_t* Operator_EqualTo(value_t* left, value_t* right, ErrorCode& error)
 	if (left->type != right->type)
 	{
 		error = ErrorCode::INVALID_CONDITION_PARAMETER;
-		return;
+		return nullptr;
 	}
 
 	bool ret = false;
@@ -175,7 +175,7 @@ value_t* Operator_EqualTo(value_t* left, value_t* right, ErrorCode& error)
 		break;
 	default:
 		error = ErrorCode::NOT_IMPLEMENTED;
-		return;
+		return nullptr;
 	}
 
 	booleanValue_t* boolRet = new booleanValue_t;
@@ -191,7 +191,7 @@ value_t* Operator_NotEqualTo(value_t* left, value_t* right, ErrorCode& error)
 	if (left->type != right->type)
 	{
 		error = ErrorCode::INVALID_CONDITION_PARAMETER;
-		return;
+		return nullptr;
 	}
 
 	bool ret = false;
@@ -209,7 +209,7 @@ value_t* Operator_NotEqualTo(value_t* left, value_t* right, ErrorCode& error)
 		break;
 	default:
 		error = ErrorCode::NOT_IMPLEMENTED;
-		return;
+		return nullptr;
 	}
 
 	booleanValue_t* boolRet = new booleanValue_t;

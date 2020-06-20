@@ -156,7 +156,7 @@ value_t* EvaluateConditionInternal(conditionChunk_t* chunkList, size_t chunkCoun
 				if (lastWasOperator && opID != ConditionOperator::OPEN_PARENTHESIS)
 				{
 					error = ErrorCode::UNEXPECTED_OPERATOR;
-					return;
+					return nullptr;
 				}
 
 				//don't want to execute something out of order!
@@ -175,13 +175,14 @@ value_t* EvaluateConditionInternal(conditionChunk_t* chunkList, size_t chunkCoun
 				switch (op->type)
 				{
 				case OperatorType::NULLARY:
+				{
 
 					if (opID == ConditionOperator::OPEN_PARENTHESIS)
 					{
 						value_t* val = EvaluateConditionInternal(chunkList + i + 1, chunkCount - i - 1, false, error);
 
 						if (error != ErrorCode::NO_ERROR)
-							return;
+							return nullptr;
 
 						//convert this into a value
 						chunkList[i].isOperator = false;
@@ -195,26 +196,28 @@ value_t* EvaluateConditionInternal(conditionChunk_t* chunkList, size_t chunkCoun
 						if (isRoot)
 						{
 							error = ErrorCode::UNEXPECTED_CLOSING_PARENTHESIS;
-							return;
+							return nullptr;
 						}
 
 						//convert this to a blank
 						NullChunk(&chunkList[i]);
-						return;
+						return nullptr;
 					}
 					break;
+				}
 				case OperatorType::UNARY:
+				{
 					//a unary operator needs just the operator to the right
 					if (i == chunkCount - 1 || chunkList[i + 1].isOperator)
 					{
 						error = ErrorCode::UNEXPECTED_OPERATOR;
-						return;
+						return nullptr;
 					}
 
 					value_t* ret = op->function(nullptr, chunkList[i + 1].value, error);
 
 					if (error != ErrorCode::NO_ERROR)
-						return;
+						return nullptr;
 
 					//update the value and null the operator
 					lastValidValueIndex = i + 1;
@@ -222,34 +225,36 @@ value_t* EvaluateConditionInternal(conditionChunk_t* chunkList, size_t chunkCoun
 
 					NullChunk(&chunkList[i]);
 
-
+				}
 				case OperatorType::BINARY:
+				{
 
 					//a binary operator needs two value arguments on both sides
 					if (i == 0 || i == chunkCount - 1 || lastValidValueIndex == -1 || chunkList[i + 1].isOperator)
 					{
 						error = ErrorCode::UNEXPECTED_OPERATOR;
-						return;
+						return nullptr;
 					}
 
 					value_t* ret = op->function(chunkList[lastValidValueIndex].value, chunkList[i + 1].value, error);
 
 					if (error != ErrorCode::NO_ERROR)
-						return;
+						return nullptr;
 
 					//reuse the last valid's value and null the operator and next value
 					chunkList[lastValidValueIndex].value = ret;
 					
 					NullChunk(&chunkList[i]);
 					NullChunk(&chunkList[i+1]);
-
+				}
 				case OperatorType::BINARY_SHORTCIRCUIT:
+				{
 
 					//a binary operator needs two value arguments on both sides
 					if (i == 0 || i == chunkCount - 1 || lastValidValueIndex == -1 || chunkList[i + 1].isOperator)
 					{
 						error = ErrorCode::UNEXPECTED_OPERATOR;
-						return;
+						return nullptr;
 					}
 
 					//no short circuits ran? check if we can short
@@ -259,15 +264,15 @@ value_t* EvaluateConditionInternal(conditionChunk_t* chunkList, size_t chunkCoun
 						value_t* ret = op->shortCircuit(chunkList[lastValidValueIndex].value, error);
 
 						if (error != ErrorCode::NO_ERROR)
-							return;
+							return nullptr;
 
 						//if this was successful, we have to null out everything to the right that we can ignore
 						if (ret)
 						{
-							
+
 							//we leave the last valid index the same, null the operator chunk, and make the old valid value our new fancy value
 							chunkList[lastValidValueIndex].value = ret;
-							
+
 							NullChunk(&chunkList[i]);
 
 
@@ -281,7 +286,7 @@ value_t* EvaluateConditionInternal(conditionChunk_t* chunkList, size_t chunkCoun
 									NullChunk(&chunkList[i]);
 								}
 							}
-							
+
 
 							//we have to reset the precedence and rescan now...
 							precedence = 0;
@@ -296,7 +301,7 @@ value_t* EvaluateConditionInternal(conditionChunk_t* chunkList, size_t chunkCoun
 						value_t* ret = op->function(chunkList[lastValidValueIndex].value, chunkList[i + 1].value, error);
 
 						if (error != ErrorCode::NO_ERROR)
-							return;
+							return nullptr;
 
 						//reuse the last valid's value and null the operator and next value
 						chunkList[lastValidValueIndex].value = ret;
@@ -304,10 +309,13 @@ value_t* EvaluateConditionInternal(conditionChunk_t* chunkList, size_t chunkCoun
 						NullChunk(&chunkList[i]);
 						NullChunk(&chunkList[i + 1]);
 					}
+				}
 				default:
-					break;
+				{
 					error = ErrorCode::NOT_IMPLEMENTED;
-					return;
+					return nullptr;
+				}
+
 				}
 
 
@@ -355,7 +363,7 @@ bool EvaluateCondition(conditionChunk_t* chunkList, size_t chunkCount, ErrorCode
 	value_t* ret = EvaluateConditionInternal(chunks, chunkCount, true, error);
 
 	if (error != ErrorCode::NO_ERROR)
-		return;
+		return false;
 
 	if (!ret || ret->type != ValueType::BOOLEAN)
 	{
