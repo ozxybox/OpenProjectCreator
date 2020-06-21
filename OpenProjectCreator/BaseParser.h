@@ -79,6 +79,7 @@ protected:
 	virtual void Execute() = 0;
 
 	virtual instructionData_t* ParseInstruction(const char* str, size_t& i, size_t length, ErrorCode& error) = 0;
+	virtual bool ParseCondition(const char* str, size_t& i, size_t length, ErrorCode& error) = 0;
 
 	virtual void ReadSubblock(const char* str, size_t& i, size_t length, ErrorCode& error) = 0;
 	virtual void SeekEndOfSubblock(const char* str, size_t& i, size_t length, ErrorCode& error) = 0;

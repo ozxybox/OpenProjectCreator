@@ -4,4 +4,5 @@
 	This file should test all of the basic features of the vpc parser
 */
 
-$Macro Jeff [$WIN32+1==1] "1"
+$Macro Jeff [$WIN32+1==2] "1" 
+$Macro Joe "0" [$WIN32+1==1] 

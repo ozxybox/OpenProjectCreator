@@ -97,13 +97,13 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 		instructionData->instruction = instruction;
 
 		bool conditionReturn = true;
+		bool hasParsedCondition = false;
 
 		// if this instruction contains arguments, we have to allocate space for them and parse them
 		if (instruction->argumentCount > 0)
 		{
 			instructionData->arguments = new value_t * [instruction->argumentCount];
 
-			bool hasParsedCondition = false;
 			for (int argument = 0; argument < instruction->argumentCount; argument++)
 			{
 				SkipWhitespace(str, i, length);
@@ -129,17 +129,14 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 
 					// failed to parse the condition
 					if (error != ErrorCode::NO_ERROR)
-					{
-						ThrowException(error);
 						return nullptr;
-					}
 
 					hasParsedCondition = true;
 
 
-					//this wasn't an argument so we have to drop argument by one
+					// this wasn't an argument so we have to drop argument by one
 					argument--;
-					//ParseCondition ends on ], so we have to increment i by one
+					// ParseCondition ends on ], so we have to increment i by one
 					i++;
 					continue;
 				}
@@ -178,6 +175,30 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 				{
 					ThrowException(error);
 					return nullptr;
+				}
+			}
+		}
+
+		if (!hasParsedCondition)
+		{
+			// we didn't hit a condition in the arguments, but there might be one lingering right next to us.. Let's check!
+
+
+			// make a new i so we don't murder the old one
+			size_t tempI = i + 1;
+			SkipWhitespace(str, tempI, length);
+
+			if (tempI < length)
+			{
+
+				if (str[tempI] == CONDITION_BEGIN)
+				{
+					// hohoho! Lucky us, a condition!
+
+					// set i to our temp i since we know for sure that this will be a condition for sure and we aren't killing our output i
+					i = tempI;
+
+					conditionReturn = ParseCondition(str, i, length, error);
 				}
 			}
 		}
