@@ -15,11 +15,11 @@ constexpr int NumberOfArgs(A ...)
 	return sizeof...(A);
 }
 
-#define DEFINE_INSTRUCTION(name, function, isPreprocessor, ...) {name, sizeof(name) / sizeof(char), {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, &function},
+#define DEFINE_INSTRUCTION(name, function, isPreprocessor, ...) {name, sizeof(name) / sizeof(char) - 1, {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, &function},
 
 // has its own custom set of sub instructions
 // count is a smelly quick fix. FIX SOON!
-#define BEGIN_CUSTOM_INSTRUCTION(name, function, isPreprocessor, count, ...) {name, sizeof(name) / sizeof(char), {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, &function, new instruction_t[count] {
+#define BEGIN_CUSTOM_INSTRUCTION(name, function, isPreprocessor, count, ...) {name, sizeof(name) / sizeof(char) - 1, {__VA_ARGS__}, NumberOfArgs(__VA_ARGS__), isPreprocessor, &function, new instruction_t[count] {
 #define END_CUSTOM_INSTRUCTION() }},
 
 
@@ -54,7 +54,7 @@ struct value_t;
 struct instructionData_t
 {
 	~instructionData_t();
-	instruction_t* instruction;
+	const instruction_t* instruction;
 	value_t** arguments = 0;
 };
 
@@ -65,7 +65,7 @@ struct instructionData_t
 class BaseParser
 {
 public:
-	BaseParser(const char* str, size_t length) { Parse(str, length); Execute(); };
+	BaseParser(const char* str, size_t length) { Parse(str, length); Execute(); }
 protected:
 
 	BaseParser() {}
@@ -83,13 +83,13 @@ protected:
 	virtual void ReadSubblock(const char* str, size_t& i, size_t length, ErrorCode& error) = 0;
 	virtual void SeekEndOfSubblock(const char* str, size_t& i, size_t length, ErrorCode& error) = 0;
 
-	virtual instruction_t* GetInstruction(InsetString str) = 0;
+	virtual const instruction_t* GetInstruction(InsetString str) = 0;
 	virtual void CacheInstructionData(instructionData_t* instructionData) = 0;
 
 	// this is virtual to allow changing of comment stuff
 	virtual void SkipWhitespace(const char* str, size_t& i, size_t length) = 0;
 
-	void ThrowException(ErrorCode error) {}
+	void ThrowException(ErrorCode error);
 
 	virtual value_t* ParseArgument(ArgumentType type, const char* str, size_t& i, size_t length, ErrorCode& error);
 	virtual void SeekEndOfArgument(ArgumentType type, const char* str, size_t& i, size_t length, ErrorCode& error);

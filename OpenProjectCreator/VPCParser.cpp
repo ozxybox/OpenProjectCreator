@@ -17,7 +17,10 @@
 
 void VPC_Macro(instructionData_t* data)
 {
-	
+
+	const char* name = static_cast<stringValue_t*>(data->arguments[0])->string.Copy();
+	const char* value = static_cast<stringValue_t*>(data->arguments[1])->string.Copy();
+	printf("$Macro %s %s\n", name, value);
 }
 
 void VPC_Configuration(instructionData_t* data)
@@ -47,6 +50,7 @@ const instruction_t g_vpcInstructions[] =
 		DEFINE_INSTRUCTION("Add", VPC_Folder_Add, false, ArgumentType::STRING)
 	END_CUSTOM_INSTRUCTION()
 };
+static size_t g_vpcInstructionCount = sizeof(g_vpcInstructions) / sizeof(instruction_t);
 
 
 BaseParser* VPCParser::Copy()
@@ -80,7 +84,7 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 			return nullptr;
 		}
 
-		instruction_t* instruction = GetInstruction(instructionStr);
+		const instruction_t* instruction = GetInstruction(instructionStr);
 		if (!instruction)
 		{
 			// we failed to find the instruction.
@@ -90,13 +94,16 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 
 
 		instructionData_t* instructionData = new instructionData_t;
+		instructionData->instruction = instruction;
+
+		bool conditionReturn = true;
+
 		// if this instruction contains arguments, we have to allocate space for them and parse them
 		if (instruction->argumentCount > 0)
 		{
 			instructionData->arguments = new value_t * [instruction->argumentCount];
 
 			bool hasParsedCondition = false;
-			bool conditionReturn = true;
 			for (int argument = 0; argument < instruction->argumentCount; argument++)
 			{
 				SkipWhitespace(str, i, length);
@@ -127,13 +134,14 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 						return nullptr;
 					}
 
-					// gotta clean up the instruction data. No use for it anymore since the condition was false
-					if (!conditionReturn)
-					{
-						delete instructionData;
-						instructionData = nullptr;
-					}
 					hasParsedCondition = true;
+
+
+					//this wasn't an argument so we have to drop argument by one
+					argument--;
+					//ParseCondition ends on ], so we have to increment i by one
+					i++;
+					continue;
 				}
 
 				if (conditionReturn)
@@ -162,6 +170,7 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 				{
 					// if the condition returned false, seek our way out of this instruction
 					SeekEndOfArgument(instruction->argumentTypes[argument], str, i, length, error);
+					instructionData->arguments[argument] = nullptr;
 				}
 
 				// failed to parse the argument
@@ -171,6 +180,13 @@ instructionData_t* VPCParser::ParseInstruction(const char* str, size_t& i, size_
 					return nullptr;
 				}
 			}
+		}
+
+		if (!conditionReturn)
+		{
+			// the condition failed. dump the data, return null, and throw no errors as this is on purpose
+			delete instructionData;
+			return nullptr;
 		}
 
 		return instructionData;
@@ -269,8 +285,7 @@ void VPCParser::SkipWhitespace(const char* str, size_t& i, size_t length)
 {
 	for (; i < length; i++)
 	{
-		if (!IsWhitespace(str[i]))
-			break;
+		
 		if (i + 1 < length && str[i] == '/')
 		{
 			i++;
@@ -288,19 +303,27 @@ void VPCParser::SkipWhitespace(const char* str, size_t& i, size_t length)
 				// multi line comment
 				// read until */
 
+				bool closedMultiline = false;
 				for(; i + 1 < length; i++)
 				{
 					if (str[i] == '*' && str[i + 1] == '/')
 					{
-						return;
+						closedMultiline = true;
+						break;
 					}
 				}
 
-				// if we've reached the end of the string and we still havent gotten to the end of the multi line, crash it
-				ThrowException(ErrorCode::UNCLOSED_MULTILINE_COMMENT);
-				return;
+				if (!closedMultiline)
+				{
+					// if we've reached the end of the string and we still havent gotten to the end of the multi line, crash it
+					ThrowException(ErrorCode::UNCLOSED_MULTILINE_COMMENT);
+					return;
+				}
+				continue;
 			}
 		}
+		if (!IsWhitespace(str[i]))
+			break;
 	}
 }
 
@@ -482,7 +505,10 @@ bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorC
 
 }
 
-instruction_t* VPCParser::GetInstruction(InsetString str)
+const instruction_t* VPCParser::GetInstruction(InsetString str)
 {
+	for (int i = 0; i < g_vpcInstructionCount; i++)
+		if (g_vpcInstructions[i].nameLength == str.length && strncmp(g_vpcInstructions[i].name, str.string, str.length) == 0)
+			return &g_vpcInstructions[i];
 	return nullptr;
 }

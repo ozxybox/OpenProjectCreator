@@ -1,13 +1,14 @@
 #include "BaseParser.h"
 #include "Values.h"
-
+#include <cstdio>
 
 instructionData_t::~instructionData_t()
 {
 	if (arguments)
 	{
 		for (int i = 0; i < instruction->argumentCount; i++)
-			delete arguments[i];
+			if(arguments[i])
+				delete arguments[i];
 
 		delete[] arguments;
 	}
@@ -21,6 +22,12 @@ void BaseParser::Parse(const char* str, size_t length)
 	{
 		SkipWhitespace(str, i, length);
 
+		if (i >= length)
+		{
+			// end of file
+			break;
+		}
+
 		instructionData_t* instructionData = ParseInstruction(str, i, length, error);
 
 
@@ -30,20 +37,29 @@ void BaseParser::Parse(const char* str, size_t length)
 			return;
 		}
 
-		// if it's a preprocessor instruction, we need to run it now
-		if (instructionData->instruction->isPreprocessor)
+		// if there's no error and it's null, we skipped it due to a condition
+		if (instructionData)
 		{
-			// run now and dump the instruction
-			instructionData->instruction->function(instructionData);
-			delete instructionData;
-		}
-		else
-		{
-			CacheInstructionData(instructionData);
-		}
 
+			// if it's a preprocessor instruction, we need to run it now
+			if (instructionData->instruction->isPreprocessor)
+			{
+				// run now and dump the instruction
+				instructionData->instruction->function(instructionData);
+				delete instructionData;
+			}
+			else
+			{
+				CacheInstructionData(instructionData);
+			}
+		}
 	}
 
+}
+
+void BaseParser::ThrowException(ErrorCode error)
+{
+	printf("Exception thrown! Error code %d\n", (int)error);
 }
 
 // parse a value out of a string depending on its type and return it
