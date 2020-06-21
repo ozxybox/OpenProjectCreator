@@ -1,0 +1,7 @@
+
+// BASIC.VPC
+/*
+	This file should test all of the basic features of the vpc parser
+*/
+
+$Macro Jeff [$WIN32+1==1] "1"
