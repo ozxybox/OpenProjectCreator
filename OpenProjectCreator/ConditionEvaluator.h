@@ -47,7 +47,11 @@ enum class ConditionOperator
 
 struct conditionChunk_t
 {
+	conditionChunk_t() { value = nullptr; };
 	~conditionChunk_t() { if (!isOperator && value) delete value; }
+
+	conditionChunk_t* Copy();
+
 	union
 	{
 		ConditionOperator operation;
@@ -59,4 +63,8 @@ struct conditionChunk_t
 
 
 ConditionOperator SearchForOperator(const char* str, size_t length, ErrorCode& error);
-bool EvaluateCondition(conditionChunk_t* chunkList, size_t chunkCount, ErrorCode& error);
+bool EvaluateCondition(conditionChunk_t** chunkList, size_t chunkCount, ErrorCode& error);
+
+
+// kinda an oddly specific function, but the parsers don't really need anything other than the lengths...
+size_t GetOperatorLength(ConditionOperator op);

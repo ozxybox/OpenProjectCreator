@@ -315,11 +315,13 @@ bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorC
 
 	i++;
 
-	std::vector<conditionChunk_t> chunkList;
+	std::vector<conditionChunk_t*> chunkList;
+
 
 	bool lastChunkWasOperator = false;
+	bool lastChunkWasValue = false;
 
-	for (; i < length; i++)
+	for (; i < length; )
 	{
 		SkipWhitespace(str, i, length);
 
@@ -339,6 +341,15 @@ bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorC
 
 		if (c == MACRO_PREFIX)
 		{
+
+			if (lastChunkWasValue)
+			{
+				error = ErrorCode::UNEXPECTED_VALUE;
+				return false;
+			}
+			lastChunkWasValue = true;
+			lastChunkWasOperator = false;
+
 			//parse out that macro
 			i++;
 
@@ -361,52 +372,113 @@ bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorC
 			//we can safely dereference this since we know it's a number
 			nv->number = *macro->GetValueInt();
 
-			conditionChunk_t valueChunk;
-			valueChunk.isOperator = false;
-			valueChunk.value = nv;
-			
+			conditionChunk_t* valueChunk = new conditionChunk_t;
+			valueChunk->isOperator = false;
+			valueChunk->value = nv;
 
 			chunkList.push_back(valueChunk);
 
-			lastChunkWasOperator = false;
 		}
-		else if (IsSymbol(c) && !lastChunkWasOperator)
+		else if (c == '(' || c == ')')
 		{
+			//improve this!
+
+			if (lastChunkWasValue)
+			{
+				error = ErrorCode::UNEXPECTED_VALUE;
+				return false;
+			}
+			lastChunkWasValue = true;
+			lastChunkWasOperator = false;
+
+
+			ConditionOperator op;
+
+			if (c == '(')
+				op = ConditionOperator::OPEN_PARENTHESIS;
+			else
+				op = ConditionOperator::CLOSE_PARENTHESIS;
+
+			conditionChunk_t* opChunk = new conditionChunk_t;
+			opChunk->isOperator = true;
+			opChunk->operation = op;
+
+			chunkList.push_back(opChunk);
+
+		}
+		else if (IsSymbol(c))
+		{
+
+			if (lastChunkWasOperator)
+			{
+				error = ErrorCode::UNEXPECTED_OPERATOR;
+				return false;
+			}
+			lastChunkWasOperator = true;
+			lastChunkWasValue = false;
+
 
 			ConditionOperator op = SearchForOperator(str + i, length - i, error);
 			if (error != ErrorCode::NO_ERROR)
 				return false;
 
-			conditionChunk_t opChunk;
-			opChunk.isOperator = true;
-			opChunk.operation = op;
+			conditionChunk_t* opChunk = new conditionChunk_t;
+			opChunk->isOperator = true;
+			opChunk->operation = op;
 
 			chunkList.push_back(opChunk);
 
-			lastChunkWasOperator = true;
+			// skip to the end of the operator
+			i += GetOperatorLength(op);
 		}
 		else if (IsNumber(c) || c == '-')
 		{
+
+			if (lastChunkWasValue)
+			{
+				error = ErrorCode::UNEXPECTED_VALUE;
+				return false;
+			}
+			lastChunkWasValue = true;
+			lastChunkWasOperator = false;
+
 			//parse the number
 
 			int number = ReadNumber(str, i, length, error);
+
 			if (error != ErrorCode::NO_ERROR)
 				return false;
 
 			numberValue_t* nv = new numberValue_t;
 			nv->number = number;
 
-			conditionChunk_t condChunk;
-			condChunk.isOperator = false;
-			condChunk.value = nv;
+			conditionChunk_t* condChunk = new conditionChunk_t;
+			condChunk->isOperator = false;
+			condChunk->value = nv;
 
-			lastChunkWasOperator = false;
+
+			chunkList.push_back(condChunk);
+
+
 		}
+		else
+		{
+			error = ErrorCode::UNKNOWN_TYPE;
 
+			for (int i = 0; i < chunkList.size(); i++)
+				delete chunkList[i];
+
+			return false;
+		}
 	}
 	
-	return EvaluateCondition(chunkList.data(), chunkList.size(), error);
+	bool ret = EvaluateCondition(chunkList.data(), chunkList.size(), error);
 
+
+	for (int i = 0; i < chunkList.size(); i++)
+		delete chunkList[i];
+
+	return ret;
 
 }
 

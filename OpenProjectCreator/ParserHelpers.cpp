@@ -5,6 +5,8 @@
 // hopefully nothing should have to change these...
 #define BLOCK_START        '{'
 #define BLOCK_END          '}'
+#define CONDITION_START    '['
+#define CONDITION_END      ']'
 #define STRING_QUOTE       '"'
 
 
@@ -50,7 +52,7 @@ InsetString ReadQuotelessString(const char* str, size_t& i, size_t length, Error
 
 	//first char must not be a symbol that's used by other types or whitespace
 	char c = str[i];
-	if (c == BLOCK_START || c == BLOCK_END || c == STRING_QUOTE || IsWhitespace(c))
+	if (c == BLOCK_START || c == BLOCK_END || c == STRING_QUOTE || c == CONDITION_START || c == CONDITION_END || IsWhitespace(c))
 	{
 		inset.length = 0;
 		inset.string = 0;
@@ -62,7 +64,6 @@ InsetString ReadQuotelessString(const char* str, size_t& i, size_t length, Error
 
 
 
-	inset.string = str + i;
 	int start = i;
 
 	i++;
@@ -70,10 +71,11 @@ InsetString ReadQuotelessString(const char* str, size_t& i, size_t length, Error
 	for (c = str[i]; i < length; i++, c = str[i])
 	{
 
-		if (IsWhitespace(c) || c == BLOCK_START || c == BLOCK_END || c == STRING_QUOTE)
+		if (IsWhitespace(c) || c == BLOCK_START || c == BLOCK_END || c == STRING_QUOTE || c == CONDITION_START || c == CONDITION_END  )
 			break;
 	}
 
+	inset.string = str + start;
 	inset.length = i - start;
 
 	return inset;
@@ -109,7 +111,7 @@ InsetString ReadQuotedString(const char* str, size_t& i, size_t length, ErrorCod
 		return inset;
 	}
 
-	inset.string = str + i;
+	inset.string = str + start;
 	inset.length = i - start;
 
 	return inset;

@@ -9,6 +9,7 @@ class Macro
 public:
 
 	Macro(InsetString key, InsetString value);
+	Macro(const char* key, const char* value);
 	~Macro();
 
 	const char* GetKey() { return m_keyStr; }
@@ -33,10 +34,14 @@ public:
 	bool* GetValueBoolean() { return (GetType() == ValueType::BOOLEAN) ? &m_boolean.boolean : nullptr; }
 
 protected:
-	const char* m_keyStr;
+
+	// looks at the value string and figures out the type
+	void AnalyzeType();
+
+	char* m_keyStr;
 	size_t m_keyLength;
 
-	const char* m_valueStr;
+	char* m_valueStr;
 	size_t m_valueLength;
 
 	union
@@ -55,11 +60,13 @@ class LinkedMacro : public Macro
 {
 public:
 	LinkedMacro(InsetString key, InsetString value) : Macro(key, value) {}
+	LinkedMacro(const char* key, const char* value) : Macro(key, value) {}
 private:
 
-	void SetValue(InsetString value) { m_valueStr = value.string;  m_valueLength = value.length; }
+	void SetValue(InsetString value) { m_valueStr = (char*)value.Copy();  m_valueLength = value.length; }
+	void SetValue(const char* value);
 
-	LinkedMacro* m_next;
+	LinkedMacro* m_next = 0;
 
 	friend class LinkedMacroList;
 
@@ -69,6 +76,7 @@ private:
 class LinkedMacroList
 {
 public:
+	LinkedMacroList();
 	~LinkedMacroList();
 
 
@@ -76,16 +84,20 @@ public:
 	LinkedMacro* m_last;
 
 	Macro* Get(InsetString key);
+	Macro* Get(const char* key);
 
 	// this function looks for a macro at the start of a string, and if it finds one, it returns it. Otherwise, it returns nullptr
 	Macro* SearchFor(const char* str, size_t length);
 	void Add(InsetString key, InsetString value);
+	void Add(const char* key, const char* value);
 	void Set(InsetString key, InsetString value);
+	void Set(const char* key, const char* value);
 };
 
 class MacroStore
 {
 public:
+
 	void SetMacro(const char* key, const char* value);
 	const char* GetMacroValue(const char* key);
 
