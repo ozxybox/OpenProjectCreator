@@ -49,6 +49,15 @@ const instruction_t g_vpcInstructions[] =
 };
 
 
+BaseParser* VPCParser::Copy()
+{
+	VPCParser* vpcParser = new VPCParser();
+	vpcParser->m_instructionSet = m_instructionSet;
+	vpcParser->m_macroStore = m_macroStore;
+	vpcParser->m_instructionDataList = m_instructionDataList;
+
+	return vpcParser;
+}
 
 void VPCParser::Execute()
 {

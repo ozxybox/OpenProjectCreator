@@ -14,6 +14,14 @@ public:
 
 private:
 	VPCParser() {}
+
+public:
+
+	virtual BaseParser* Copy();
+
+private:
+
+
 	virtual void Execute();
 	virtual instructionData_t* ParseInstruction(const char* str, size_t& i, size_t length, ErrorCode& error);
 	virtual void ReadSubblock(const char* str, size_t& i, size_t length, ErrorCode& error);

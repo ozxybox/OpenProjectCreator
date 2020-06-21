@@ -70,6 +70,11 @@ protected:
 
 	BaseParser() {}
 
+public:
+	virtual BaseParser* Copy() = 0;
+
+
+protected:
 	virtual void Parse(const char* str, size_t length);
 	virtual void Execute() = 0;
 

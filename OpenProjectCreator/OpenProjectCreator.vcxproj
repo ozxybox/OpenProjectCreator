@@ -155,6 +155,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OperatorFunctions.cpp" />
     <ClCompile Include="ParserHelpers.cpp" />
+    <ClCompile Include="Values.cpp" />
     <ClCompile Include="VisualStudioProject.cpp" />
     <ClCompile Include="VPCParser.cpp" />
   </ItemGroup>
