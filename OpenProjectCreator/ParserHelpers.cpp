@@ -78,6 +78,9 @@ InsetString ReadQuotelessString(const char* str, size_t& i, size_t length, Error
 	inset.string = str + start;
 	inset.length = i - start;
 
+	// this should end on the last character of the string.
+	i--;
+
 	return inset;
 }
 
@@ -173,6 +176,11 @@ int ReadNumber(const char* str, size_t& i, size_t length, ErrorCode& error)
 		number += str[i] - '0';
 	}
 
+
+	// this should end on the last character of the number.
+	i--;
+
+
 	return number * (isNegative ? -1 : 1);
 }
 
@@ -204,6 +212,9 @@ void SeekEndOfQuotelessString(const char* str, size_t& i, size_t length, ErrorCo
 		if (IsWhitespace(c) || c == BLOCK_START || c == BLOCK_END || c == STRING_QUOTE)
 			break;
 	}
+
+	// this should end on the last character of the string.
+	i--;
 
 	return;
 }
@@ -270,4 +281,9 @@ void SeekEndOfNumber(const char* str, size_t& i, size_t length, ErrorCode& error
 	i++;
 
 	for (; i < length && IsNumber(str[i]); i++);
+
+
+	// this should end on the last character of the number.
+	i--;
+
 }
