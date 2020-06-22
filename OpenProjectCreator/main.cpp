@@ -1,12 +1,13 @@
 #include <iostream>
 #include <cstddef>
+#include <cassert>
 #include "VPCParser.h"
 
 char* ReadFile(const char* path, size_t& len)
 {
 
 	FILE* f;
-	errno_t error = fopen_s(&f, path, "rb");
+	assert((f = fopen(path, "rb")));
 	fseek(f, 0, SEEK_END);
 	len = ftell(f);
 	rewind(f);

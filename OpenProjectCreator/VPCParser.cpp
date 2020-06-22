@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <cstddef>
+#include <cstdio>
+#include <cstring>
 
 #include "VPCParser.h"
 #include "ParserHelpers.h"
