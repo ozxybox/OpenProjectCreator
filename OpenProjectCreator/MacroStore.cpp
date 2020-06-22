@@ -19,12 +19,12 @@ Macro::Macro(const char* key, const char* value)
 {
 	
 	m_keyLength = strlen(key);
-	m_keyStr = new char[m_keyLength];
+	m_keyStr = new char[m_keyLength+1];
 	memcpy(m_keyStr, key, m_keyLength);
 	m_keyStr[m_keyLength] = 0;
 
 	m_valueLength = strlen(value);
-	m_valueStr = new char[m_valueLength];
+	m_valueStr = new char[m_valueLength+1];
 	memcpy(m_valueStr, value, m_valueLength);
 	m_valueStr[m_valueLength] = 0;
 
