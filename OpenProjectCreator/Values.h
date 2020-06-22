@@ -1,6 +1,7 @@
 #pragma once
 #include <cstddef>
 #include "ParserHelpers.h"
+#include "BaseParser.h" // for `delete subblock`
 
 
 enum class ValueType

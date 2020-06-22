@@ -68,6 +68,7 @@ class BaseParser
 {
 public:
 	BaseParser(const char* str, size_t length) { Parse(str, length); Execute(); }
+	virtual ~BaseParser();
 protected:
 
 	BaseParser() {}

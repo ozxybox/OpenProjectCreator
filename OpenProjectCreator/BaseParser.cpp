@@ -3,6 +3,8 @@
 #include <cstdio>
 #include <cstddef>
 
+BaseParser::~BaseParser() {}
+
 instructionData_t::~instructionData_t()
 {
 	if (arguments)

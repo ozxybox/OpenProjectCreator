@@ -9,7 +9,7 @@ valueArray_t valueArray_t::Copy()
 	valueArray_t valArray; 
 	valArray.length = length; 
 	valArray.array = new value_t[length]; 
-	memcpy(valArray.array, array, length * sizeof(value_t));
+	memcpy((void *)valArray.array, array, length * sizeof(value_t));
 	
 	return valArray;
 }
