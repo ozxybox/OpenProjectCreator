@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #define END_LINE '\n'
 
 

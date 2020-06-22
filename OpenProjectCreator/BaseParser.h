@@ -3,6 +3,8 @@
 #include "ParserHelpers.h"
 #include "Errors.h"
 
+#include <cstddef>
+
 // super lazy. change this?
 #define ARGUMENT_MAX_COUNT 3
 

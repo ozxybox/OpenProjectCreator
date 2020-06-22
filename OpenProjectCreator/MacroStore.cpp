@@ -1,4 +1,5 @@
 #include <cstring>
+#include <cstddef>
 
 #include "MacroStore.h"
 #include "Errors.h"

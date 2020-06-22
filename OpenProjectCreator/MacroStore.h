@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Values.h"
+#include <cstddef>
 
 
 // normal macros are read only. Nothing should have to modify these once they're created

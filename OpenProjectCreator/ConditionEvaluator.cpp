@@ -1,5 +1,6 @@
 #include <cstring>
 #include <climits>
+#include <cstddef>
 
 #include "ConditionEvaluator.h"
 #include "OperatorFunctions.h"

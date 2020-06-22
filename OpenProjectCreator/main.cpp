@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstddef>
 #include "VPCParser.h"
 
 char* ReadFile(const char* path, size_t& len)
