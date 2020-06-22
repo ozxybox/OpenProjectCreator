@@ -4,13 +4,14 @@ C=BaseParser.cpp   ConditionEvaluator.cpp  MacroStore.cpp         ParserHelpers.
 BaseProject.cpp  ExtendedVPCParser.cpp   OperatorFunctions.cpp  VPCParser.cpp      VisualStudioProject.cpp
 O=$(patsubst %.cpp,obj/%.o,$(C))
 
-
 bin/opc: $(O)
-	mkdir -p bin
+	@mkdir -p bin
 	$(CXX) $(CCFLAGS) $(LDFLAGS) $^ -o $@
 
 obj/%.o: $(D)/%.cpp
-	mkdir -p obj
+	@mkdir -p obj
 	$(CXX) $(CCFLAGS) -c $^ -o $@
 
-
+.PHONY: clean
+clean:
+	rm -rf obj bin
