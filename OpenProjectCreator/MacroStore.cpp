@@ -205,7 +205,7 @@ Macro* MacroStore::SearchForMacro(const char* str, size_t length)
 void LinkedMacro::SetValue(const char* value)
 {
 	m_valueLength = strlen(value);
-	m_valueStr = new char[m_valueLength];
+	m_valueStr = new char[m_valueLength + 1];
 	memcpy(m_valueStr, value, m_valueLength);
 	m_valueStr[m_valueLength] = 0;
 	
