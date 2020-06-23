@@ -21,7 +21,7 @@ instructionData_t::~instructionData_t()
 void BaseParser::Parse(const char* str, size_t length)
 {
 	ErrorCode error = ErrorCode::NO_ERROR;
-	for (size_t i = 0; i < length; i++)
+	for (size_t i = 0; i < length;)
 	{
 		SkipWhitespace(str, i, length);
 

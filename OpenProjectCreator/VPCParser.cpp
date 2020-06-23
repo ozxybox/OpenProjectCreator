@@ -494,6 +494,9 @@ bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorC
 		}
 	}
 	
+	// got to make sure we end on the character after the ]
+	i++;
+
 	bool ret = EvaluateCondition(chunkList.data(), chunkList.size(), error);
 
 
