@@ -16,46 +16,6 @@
 
 
 
-//this is so sad
-
-void VPC_Macro(instructionData_t* data)
-{
-
-	const char* name = static_cast<stringValue_t*>(data->arguments[0])->string.Copy();
-	const char* value = static_cast<stringValue_t*>(data->arguments[1])->string.Copy();
-	printf("$Macro %s %s\n", name, value);
-}
-
-void VPC_Configuration(instructionData_t* data)
-{
-
-}
-
-void VPC_Folder(instructionData_t* data)
-{
-
-}
-
-void VPC_Folder_Add(instructionData_t* data)
-{
-
-}
-
-
-// hash table would be quicker
-const instruction_t g_vpcInstructions[] =
-{
-	//Name, function, is preprocessor, argument types(MAX OF 4)
-	DEFINE_INSTRUCTION("Macro", VPC_Macro, true, ArgumentType::QUOTELESS_STRING, ArgumentType::QUOTED_STRING)
-	DEFINE_INSTRUCTION("Configuration", VPC_Configuration, false, ArgumentType::QUOTED_STRING, ArgumentType::SUBBLOCK)
-
-	BEGIN_CUSTOM_INSTRUCTION("Folder", VPC_Folder, false, 1, ArgumentType::STRING, ArgumentType::SUBBLOCK)
-		DEFINE_INSTRUCTION("Add", VPC_Folder_Add, false, ArgumentType::STRING)
-	END_CUSTOM_INSTRUCTION()
-};
-
-static size_t g_vpcInstructionCount = sizeof(g_vpcInstructions) / sizeof(instruction_t);
-
 
 VPCParser::VPCParser(const char* str, size_t length)
 {
@@ -65,6 +25,8 @@ VPCParser::VPCParser(const char* str, size_t length)
 #else
 	m_macroStore.SetMacro("WIN32", "0");
 #endif
+
+	m_instructionSet = VPCInstructionSet::Get();
 
 	Init(str, length);
 }
@@ -540,12 +502,4 @@ bool VPCParser::ParseCondition(const char* str, size_t& i, size_t length, ErrorC
 
 	return ret;
 
-}
-
-const instruction_t* VPCParser::GetInstruction(InsetString str)
-{
-	for (int i = 0; i < g_vpcInstructionCount; i++)
-		if (g_vpcInstructions[i].nameLength == str.length && strncmp(g_vpcInstructions[i].name, str.string, str.length) == 0)
-			return &g_vpcInstructions[i];
-	return nullptr;
 }

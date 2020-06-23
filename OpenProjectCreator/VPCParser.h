@@ -5,6 +5,7 @@
 
 #include "BaseParser.h"
 #include "MacroStore.h"
+#include "VPCInstructionSet.h"
 
 #include "Values.h"
 #include "Errors.h"
@@ -33,13 +34,13 @@ private:
 
 	virtual bool ParseCondition(const char* str, size_t& i, size_t length, ErrorCode& error);
 
-	virtual const instruction_t* GetInstruction(InsetString str);
+	virtual const instruction_t* GetInstruction(InsetString str) { return m_instructionSet->GetInstruction(str); };
 	virtual void CacheInstructionData(instructionData_t* instructionData) { m_instructionDataList.push_back(instructionData); }
 
 	MacroStore m_macroStore;
 
 	std::vector<instructionData_t*> m_instructionDataList;
-	instruction_t* m_instructionSet;
+	InstructionSet* m_instructionSet;
 
 
 };

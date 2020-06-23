@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="InstructionSet.cpp" />
     <ClCompile Include="BaseParser.cpp" />
     <ClCompile Include="BaseProject.cpp" />
     <ClCompile Include="ConditionEvaluator.cpp" />
@@ -157,9 +158,11 @@
     <ClCompile Include="ParserHelpers.cpp" />
     <ClCompile Include="Values.cpp" />
     <ClCompile Include="VisualStudioProject.cpp" />
+    <ClCompile Include="VPCInstructionSet.cpp" />
     <ClCompile Include="VPCParser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="InstructionSet.h" />
     <ClInclude Include="BaseParser.h" />
     <ClInclude Include="BaseProject.h" />
     <ClInclude Include="ConditionEvaluator.h" />
@@ -170,6 +173,7 @@
     <ClInclude Include="ParserHelpers.h" />
     <ClInclude Include="Values.h" />
     <ClInclude Include="VisualStudioProject.h" />
+    <ClInclude Include="VPCInstructionSet.h" />
     <ClInclude Include="VPCParser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
