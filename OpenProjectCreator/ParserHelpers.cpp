@@ -65,7 +65,7 @@ InsetString ReadQuotelessString(const char* str, size_t& i, size_t length, Error
 
 
 
-	int start = i;
+	size_t start = i;
 
 	i++;
 
@@ -98,7 +98,7 @@ InsetString ReadQuotedString(const char* str, size_t& i, size_t length, ErrorCod
 	}
 	i++;
 
-	int start = i;
+	size_t start = i;
 
 	for (; i < length && str[i] != STRING_QUOTE; i++);
 
@@ -227,7 +227,7 @@ void SeekEndOfQuotedString(const char* str, size_t& i, size_t length, ErrorCode&
 	}
 	i++;
 
-	int start = i;
+	size_t start = i;
 
 	for (; i < length && str[i] != STRING_QUOTE; i++);
 
