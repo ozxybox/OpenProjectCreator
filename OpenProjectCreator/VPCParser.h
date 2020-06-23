@@ -12,7 +12,7 @@
 class VPCParser : public BaseParser
 {
 public:
-	VPCParser(const char* str, size_t length) { m_macroStore.SetMacro("WIN32", "1"); Parse(str, length); Execute(); }
+	VPCParser(const char* str, size_t length);
 private:
 	VPCParser() {}
 

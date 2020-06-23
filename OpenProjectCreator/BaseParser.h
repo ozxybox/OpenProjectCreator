@@ -67,7 +67,7 @@ struct instructionData_t
 class BaseParser
 {
 public:
-	BaseParser(const char* str, size_t length) { Parse(str, length); Execute(); }
+	virtual void Init(const char* str, size_t length) { Parse(str, length); Execute(); }
 	virtual ~BaseParser();
 protected:
 

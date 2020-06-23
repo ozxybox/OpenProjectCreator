@@ -53,8 +53,21 @@ const instruction_t g_vpcInstructions[] =
 		DEFINE_INSTRUCTION("Add", VPC_Folder_Add, false, ArgumentType::STRING)
 	END_CUSTOM_INSTRUCTION()
 };
+
 static size_t g_vpcInstructionCount = sizeof(g_vpcInstructions) / sizeof(instruction_t);
 
+
+VPCParser::VPCParser(const char* str, size_t length)
+{
+
+#ifdef _WIN32
+	m_macroStore.SetMacro("WIN32", "1");
+#else
+	m_macroStore.SetMacro("WIN32", "0");
+#endif
+
+	Init(str, length);
+}
 
 BaseParser* VPCParser::Copy()
 {
