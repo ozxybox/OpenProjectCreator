@@ -1,6 +1,9 @@
 #include "BaseParser.h"
 #include "Values.h"
 #include <cstdio>
+#include <cstddef>
+
+BaseParser::~BaseParser() {}
 
 instructionData_t::~instructionData_t()
 {

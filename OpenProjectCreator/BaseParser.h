@@ -3,6 +3,8 @@
 #include "ParserHelpers.h"
 #include "Errors.h"
 
+#include <cstddef>
+
 // super lazy. change this?
 #define ARGUMENT_MAX_COUNT 3
 
@@ -66,6 +68,7 @@ class BaseParser
 {
 public:
 	BaseParser(const char* str, size_t length) { Parse(str, length); Execute(); }
+	virtual ~BaseParser();
 protected:
 
 	BaseParser() {}
